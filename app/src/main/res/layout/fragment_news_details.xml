@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="newsItem"
+            type="com.mdasrafulalam.news.model.Article" />
+    </data>
+
+    <ScrollView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".NewsDetailsFragment">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_green"
+                app:title="NEWS"
+                app:titleTextColor="@color/white" />
+            <RelativeLayout
+                android:id="@+id/newsDetailsRL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#FDFCEC">
+                <ImageView
+                    android:id="@+id/newsSaveIV"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_below="@+id/newsTitleTV"
+                    android:src="@drawable/ic_twotone_bookmark_added_24"
+                    android:layout_alignParentEnd="true"/>
+                <TextView
+                    android:id="@+id/newsTitleTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@{newsItem.title}"
+                    android:marqueeRepeatLimit="@integer/material_motion_duration_long_2"
+                    android:textColor="@color/black"
+                    android:textSize="25sp"
+                    android:textStyle="bold"
+                    tools:text="Trumph lost the president election!" />
+
+                <TextView
+                    android:id="@+id/newsAuthorNameTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/newsTitleTV"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@{newsItem.author}"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    tools:text="Jhon David" />
+
+                <TextView
+                    android:id="@+id/publishDateTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/newsAuthorNameTV"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@{newsItem.publishedAt}"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    tools:text="Published at: 27, December" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_below="@+id/publishDateTV"
+                    android:layout_marginTop="21dp"
+                    android:scaleType="fitXY"
+                    app:setImageResources="@{newsItem.urlToImage}"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/settings" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">                        <LinearLayout
+                android:layout_margin="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/newsDetailsTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{newsItem.content}"
+                    android:textSize="20sp"
+                    tools:text="@string/newsdetails"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/addBookmarkFAB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_marginBottom="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="#8BF487"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    app:icon="@drawable/bookmark"
+                    android:text="Add To Bookmark"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

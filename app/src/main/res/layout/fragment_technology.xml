@@ -7,15 +7,13 @@
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/healthSwipRefreshLayout"
+        android:id="@+id/technologySwipRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".HealthFragment">
-
+        tools:context=".TechnologyFragment">
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/healthNewsRV"
+            android:id="@+id/technologyNewsRV"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>
