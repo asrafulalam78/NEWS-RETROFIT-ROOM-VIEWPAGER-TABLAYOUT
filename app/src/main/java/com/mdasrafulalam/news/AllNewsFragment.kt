@@ -17,6 +17,7 @@ import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.FragmentHomeBinding
+import com.mdasrafulalam.news.model.News
 import kotlinx.android.synthetic.main.fragment_all_news.*
 
 class AllNewsFragment : Fragment() {
@@ -35,7 +36,7 @@ class AllNewsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = NewsRecyclerViewAdapter()
+        val adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.newsRV.adapter = adapter
         viewModel.getAllNews().observe(viewLifecycleOwner){
@@ -54,6 +55,9 @@ class AllNewsFragment : Fragment() {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo=connectivityManager.activeNetworkInfo
         return  networkInfo!=null && networkInfo.isConnected
+    }
+    fun updateBookmark(news: News) {
+        viewModel.updateBookMark(news)
     }
 
 }

@@ -2,22 +2,18 @@ package com.mdasrafulalam.news.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mdasrafulalam.news.AllNewsFragmentDirections
 import com.mdasrafulalam.news.HomeFragmentDirections
-import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.NewsListItemBinding
-import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 
-class NewsRecyclerViewAdapter() :
+class NewsRecyclerViewAdapter(val addBookmarkCallback: (News) -> Unit) :
     ListAdapter<News, NewsRecyclerViewAdapter.NewsViewHolder>(NewsDiffCallback()) {
-    class NewsViewHolder( private val binding: NewsListItemBinding): RecyclerView.ViewHolder(binding.root){
+    class NewsViewHolder( val binding: NewsListItemBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(newsModel: News){
             binding.newsItem = newsModel
             binding.moreCard.setOnClickListener {
@@ -44,7 +40,12 @@ class NewsRecyclerViewAdapter() :
     }
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val newsModel = getItem(position)
+        val newsModel:News = getItem(position)
         holder.bind(newsModel)
+        holder.binding.bookmarkIV.setOnClickListener {
+            newsModel.isBookmared = !newsModel.isBookmared
+            holder.bind(newsModel)
+            addBookmarkCallback(newsModel)
+        }
     }
 }

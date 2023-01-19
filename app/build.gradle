@@ -91,4 +91,8 @@ dependencies {
 
     //pull refresh
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    //Pager
+    implementation "android.arch.paging:runtime:1.0.1"
+
 }

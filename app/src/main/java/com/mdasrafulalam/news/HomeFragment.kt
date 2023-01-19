@@ -12,11 +12,12 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.FragmentHomeBinding
+import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 
 class HomeFragment : Fragment() {
 
-    private val viewModel: NewsViewmodel by activityViewModels()
+     val viewModel: NewsViewmodel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +37,5 @@ class HomeFragment : Fragment() {
             tab.text = Constants.categoryArray[position]
         }.attach()
     }
-
 
 }

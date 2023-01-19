@@ -9,6 +9,9 @@ interface NewsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNews(news: News) : Long
 
+    @Update
+    suspend fun updateNews(news: News)
+
     @Delete
     suspend fun deleteNews(news: News)
 
@@ -18,4 +21,6 @@ interface NewsDao {
     @Query("select * from tbl_news where category = :category")
     fun getNewsByCategory(category: String) : LiveData<List<News>>
 
+    @Query("select * from tbl_news where is_bookmared = 1")
+    fun getBookMaredNews() : LiveData<List<News>>
 }

@@ -30,7 +30,7 @@ class EntertainmentFragment : Fragment() {
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = NewsRecyclerViewAdapter()
+        val adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.entertainmentNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.entertainmentNewsRV.adapter = adapter
         viewModel.refreshRV()
@@ -44,6 +44,9 @@ class EntertainmentFragment : Fragment() {
                 adapter.submitList(it)
             }
         }
+    }
+    fun updateBookmark(news:News) {
+        viewModel.updateBookMark(news)
     }
 
 

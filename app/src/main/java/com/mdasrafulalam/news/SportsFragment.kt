@@ -12,6 +12,7 @@ import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentSportsBinding
+import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 
 class SportsFragment : Fragment() {
@@ -28,7 +29,7 @@ class SportsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = NewsRecyclerViewAdapter()
+        val adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.sportsNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.sportsNewsRV.adapter = adapter
         viewModel.refreshRV()
@@ -42,5 +43,8 @@ class SportsFragment : Fragment() {
                 adapter.submitList(it)
             }
         }
+    }
+    fun updateBookmark(news: News) {
+        viewModel.updateBookMark(news)
     }
 }

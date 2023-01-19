@@ -21,4 +21,5 @@ class Constants {
         val CATEGORY_SPORTS = "sports"
         val CATEGORY_TECHNOLOGY = "technology"
     }
+
 }

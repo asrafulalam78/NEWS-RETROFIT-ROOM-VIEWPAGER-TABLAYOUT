@@ -22,5 +22,6 @@ class News(
        @Nullable
        val urlToImage: String?,
        val category: String?,
-       val isBookmared: Boolean = false
+       @ColumnInfo(name = "is_bookmared")
+       var isBookmared: Boolean = false
 ) : java.io.Serializable

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.mdasrafulalam.news.db.NewsDB
 import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
@@ -21,7 +22,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
     private val _status = MutableLiveData<NewsApiStatus>()
     private val _topNewsList = MutableLiveData<List<Article>>()
     val topNewsList: LiveData<List<Article>> = _topNewsList
-    private val _businessNewsList = MutableLiveData<List<Article>>()
+    private var _businessNewsList = MutableLiveData<List<Article>>()
     val businessNewsList: LiveData<List<Article>> = _businessNewsList
     private val _entertainNewsList = MutableLiveData<List<Article>>()
     val entertainNewsList: LiveData<List<Article>> = _entertainNewsList
@@ -33,6 +34,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
     val sportsNewsList: LiveData<List<Article>> = _sportsNewsList
     private val _technologyNewsList = MutableLiveData<List<Article>>()
     val technologyNewsList: LiveData<List<Article>> = _technologyNewsList
+
 
 
     init {
@@ -48,11 +50,16 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         getScienceNews()
         getSportsNews()
         getTechnologyNews()
+        getBookMaredNews()
     }
-
     fun addNews(news: News) {
         viewModelScope.launch {
             repository.addNews(news)
+        }
+    }
+    fun updateBookMark(news: News){
+        viewModelScope.launch {
+            repository.updateNews(news)
         }
     }
 
@@ -206,6 +213,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         }
     }
 
+    fun getBookMaredNews() : LiveData<List<News>> = repository.getBookMaredNews()
     fun getAllNews() : LiveData<List<News>> = repository.getAllNews()
     fun getBusinessNews(category: String) : LiveData<List<News>> = repository.getNewsByCategory(category)
     fun getEntertainmentNews(category: String) : LiveData<List<News>> = repository.getNewsByCategory(category)

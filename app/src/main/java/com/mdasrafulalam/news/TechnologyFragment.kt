@@ -12,6 +12,7 @@ import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentHealthBinding
 import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
+import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 
 class TechnologyFragment : Fragment() {
@@ -28,7 +29,7 @@ class TechnologyFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = NewsRecyclerViewAdapter()
+        val adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.technologyNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.technologyNewsRV.adapter = adapter
         viewModel.refreshRV()
@@ -42,5 +43,8 @@ class TechnologyFragment : Fragment() {
                 adapter.submitList(it)
             }
         }
+    }
+    fun updateBookmark(news: News) {
+        viewModel.updateBookMark(news)
     }
 }

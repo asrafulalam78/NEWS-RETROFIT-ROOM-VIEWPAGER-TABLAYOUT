@@ -30,7 +30,7 @@ class BusinessFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = NewsRecyclerViewAdapter()
+        val adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.businessNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.businessNewsRV.adapter = adapter
         viewModel.refreshRV()
@@ -47,6 +47,9 @@ class BusinessFragment : Fragment() {
                 adapter.submitList(it)
             }
         }
+    }
+    fun updateBookmark(news:News) {
+        viewModel.updateBookMark(news)
     }
 
 }

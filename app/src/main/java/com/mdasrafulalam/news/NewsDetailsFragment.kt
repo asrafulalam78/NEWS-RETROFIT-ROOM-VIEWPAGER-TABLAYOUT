@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.FragmentNewsDetailsBinding
 import com.mdasrafulalam.news.model.News
@@ -21,6 +22,13 @@ class NewsDetailsFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val newsItem = arguments?.getSerializable("newsItem") as News
-//        binding.newsItem = newsItem
+        binding.newsItem = newsItem
+        binding.readMoreTV.setOnClickListener(View.OnClickListener {
+            val action = NewsDetailsFragmentDirections.actionNewsDetailsFragmentToWebViewFragment(newsItem.url)
+            findNavController().navigate(action)
+        })
+        binding.addBookmarkFAB.setOnClickListener {
+
+        }
     }
 }

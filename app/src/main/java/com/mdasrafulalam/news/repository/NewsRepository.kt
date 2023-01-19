@@ -10,7 +10,11 @@ class NewsRepository(private val dao:NewsDao) {
 
     suspend fun deleteNews(news: News) = dao.deleteNews(news)
 
+    suspend fun updateNews(news: News) = dao.updateNews(news)
+
     fun getAllNews() : LiveData<List<News>> = dao.getAllNews()
+
+    fun getBookMaredNews():LiveData<List<News>> = dao.getBookMaredNews()
 
     fun getNewsByCategory(category: String): LiveData<List<News>> = dao.getNewsByCategory(category)
 }

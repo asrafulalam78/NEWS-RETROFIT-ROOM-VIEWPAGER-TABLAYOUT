@@ -2,8 +2,11 @@ package com.mdasrafulalam.news
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mdasrafulalam.news.databinding.ActivityMainBinding
@@ -25,9 +28,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        val navView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener{ _, nd: NavDestination, _ ->
+            if (nd.id == R.id.newsDetailsFragment || nd.id==R.id.webViewFragment){
+                navView.visibility = View.GONE
+            }else{
+                navView.visibility = View.VISIBLE
+            }
+        }
         binding.bottomNavigationView.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.homeFragment -> navController.navigate(R.id.homeFragment)
