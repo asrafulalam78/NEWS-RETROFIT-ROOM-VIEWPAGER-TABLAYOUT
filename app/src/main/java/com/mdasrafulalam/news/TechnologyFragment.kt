@@ -15,6 +15,7 @@ import com.mdasrafulalam.news.databinding.FragmentHealthBinding
 import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 class TechnologyFragment : Fragment() {
 
@@ -43,10 +44,22 @@ class TechnologyFragment : Fragment() {
         }
         binding.technologySwipRefreshLayout.setOnRefreshListener{
             binding.technologySwipRefreshLayout.isRefreshing = false
-            viewModel.refreshTechnologyNews()
-            viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY).observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.swipe_color_4)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshTechnologyNews()
+                viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY).observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
     fun updateBookmark(news: News) {

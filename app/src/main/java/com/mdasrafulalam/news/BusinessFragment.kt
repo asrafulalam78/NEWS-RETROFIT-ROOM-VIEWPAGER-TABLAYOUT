@@ -17,6 +17,7 @@ import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 class BusinessFragment : Fragment() {
     private lateinit var binding: FragmentBusinessBinding
@@ -44,10 +45,21 @@ class BusinessFragment : Fragment() {
         }
         binding.businessFragmentSwipRefreshLayout.setOnRefreshListener{
             binding.businessFragmentSwipRefreshLayout.isRefreshing = false
-            viewModel.refreshBusinessnews()
-            viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS).observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshBusinessnews()
+                viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS).observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
     fun updateBookmark(news:News) {

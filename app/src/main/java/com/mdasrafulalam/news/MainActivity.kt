@@ -3,15 +3,12 @@ package com.mdasrafulalam.news
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.text.Layout
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -24,6 +21,7 @@ import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.ActivityMainBinding
 import com.mdasrafulalam.news.utils.Constants
 import kotlinx.android.synthetic.main.activity_main.*
+import org.aviran.cookiebar2.CookieBar
 
 
 val categoryArray = arrayOf(
@@ -46,6 +44,16 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        checkPermission()
+        if (!Constants.verifyAvailableNetwork(this)){
+            CookieBar.build(this)
+                .setTitle("Network Connection")
+                .setMessage("No Active Internet!")
+                .setDuration(5000)
+                .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                .show()
+        }
         viewModel = ViewModelProvider(this)[NewsViewmodel::class.java]
         val navView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         val navHostFragment = supportFragmentManager
@@ -82,9 +90,14 @@ class MainActivity : AppCompatActivity() {
                 0
             )
         } else {
-            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT)
+            CookieBar.build(this)
+                .setTitle("Network Connection")
+                .setTitleColor(R.color.swipe_color_1)
+                .setMessage("Permission already granted")
+                .setBackgroundColor(R.color.swipe_color_1)
+                .setSwipeToDismiss(true)
+                .setDuration(5000) // 5 seconds
                 .show()
-//            Timber.d("Permission Already Granted")
         }
     }
 

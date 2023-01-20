@@ -15,6 +15,7 @@ import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentHealthBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 
 class HealthFragment : Fragment() {
@@ -39,10 +40,21 @@ class HealthFragment : Fragment() {
         }
         binding.healthSwipRefreshLayout.setOnRefreshListener{
             binding.healthSwipRefreshLayout.isRefreshing = false
-            viewModel.refreshHealthNews()
-            viewModel.getHealthNews(Constants.CATEGORY_HEALTH).observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshHealthNews()
+                viewModel.getHealthNews(Constants.CATEGORY_HEALTH).observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
     fun updateBookmark(news: News) {

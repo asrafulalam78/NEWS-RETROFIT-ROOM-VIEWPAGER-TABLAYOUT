@@ -14,6 +14,7 @@ import com.mdasrafulalam.news.databinding.FragmentBookMarkBinding
 import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 class BookMarkFragment : Fragment() {
     private lateinit var binding: FragmentBookMarkBinding
@@ -40,10 +41,21 @@ class BookMarkFragment : Fragment() {
         }
         binding.boomarkRefreshLayout.setOnRefreshListener{
             binding.boomarkRefreshLayout.isRefreshing = false
-            viewModel.refreshBookMaredNews()
-            viewModel.getBookMaredNews().observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshBookMaredNews()
+                viewModel.getBookMaredNews().observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

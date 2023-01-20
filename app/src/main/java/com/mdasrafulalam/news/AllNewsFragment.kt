@@ -19,7 +19,9 @@ import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.FragmentHomeBinding
 import com.mdasrafulalam.news.model.News
+import com.mdasrafulalam.news.utils.Constants
 import kotlinx.android.synthetic.main.fragment_all_news.*
+import org.aviran.cookiebar2.CookieBar
 
 class AllNewsFragment : Fragment() {
     private lateinit var binding: FragmentAllNewsBinding
@@ -51,17 +53,24 @@ class AllNewsFragment : Fragment() {
         }
         swipeRefreshLayout.setOnRefreshListener{
             swipeRefreshLayout.isRefreshing = false
-            viewModel.refreshAllNews()
-            viewModel.getAllNews().observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshAllNews()
+                viewModel.getAllNews().observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
-    private fun verifyAvailableNetwork(context: Context):Boolean{
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo=connectivityManager.activeNetworkInfo
-        return  networkInfo!=null && networkInfo.isConnected
-    }
+
     fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }

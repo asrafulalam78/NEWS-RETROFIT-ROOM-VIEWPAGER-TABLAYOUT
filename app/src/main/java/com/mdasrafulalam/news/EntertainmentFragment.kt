@@ -16,6 +16,7 @@ import com.mdasrafulalam.news.databinding.FragmentEntertainmentBinding
 import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 
 class EntertainmentFragment : Fragment() {
@@ -43,10 +44,21 @@ class EntertainmentFragment : Fragment() {
         }
         binding.entertainmentFragmentSwipRefreshLayout.setOnRefreshListener{
             binding.entertainmentFragmentSwipRefreshLayout.isRefreshing = false
-            viewModel.refreshEntertainmentNews()
-            viewModel.getEntertainmentNews(Constants.CATEGORY_ENTERTAINMENT).observe(viewLifecycleOwner){
-                adapter.submitList(it)
+            if (!Constants.verifyAvailableNetwork(requireContext())){
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setMessage("No Active Internet!")
+                    .setDuration(5000)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
+            }else{
+                viewModel.refreshEntertainmentNews()
+                viewModel.getEntertainmentNews(Constants.CATEGORY_ENTERTAINMENT).observe(viewLifecycleOwner){
+                    adapter.submitList(it)
+                }
             }
+
         }
     }
     fun updateBookmark(news:News) {
