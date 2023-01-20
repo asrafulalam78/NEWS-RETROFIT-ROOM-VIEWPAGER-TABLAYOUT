@@ -47,6 +47,7 @@ class EntertainmentFragment : Fragment() {
             if (!Constants.verifyAvailableNetwork(requireContext())){
                 CookieBar.build(requireActivity())
                     .setTitle("Network Connection")
+                    .setTitleColor(R.color.swipe_color_4)
                     .setMessage("No Active Internet!")
                     .setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
@@ -57,6 +58,13 @@ class EntertainmentFragment : Fragment() {
                 viewModel.getEntertainmentNews(Constants.CATEGORY_ENTERTAINMENT).observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
             }
 
         }

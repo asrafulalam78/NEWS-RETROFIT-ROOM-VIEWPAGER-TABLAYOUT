@@ -48,6 +48,7 @@ class BusinessFragment : Fragment() {
             if (!Constants.verifyAvailableNetwork(requireContext())){
                 CookieBar.build(requireActivity())
                     .setTitle("Network Connection")
+                    .setTitleColor(R.color.swipe_color_4)
                     .setMessage("No Active Internet!")
                     .setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
@@ -58,6 +59,14 @@ class BusinessFragment : Fragment() {
                 viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS).observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setLayoutGravity(800)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
             }
 
         }

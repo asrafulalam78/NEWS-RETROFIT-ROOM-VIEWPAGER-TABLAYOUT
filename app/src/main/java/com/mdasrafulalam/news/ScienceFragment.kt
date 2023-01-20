@@ -48,6 +48,7 @@ class ScienceFragment : Fragment() {
                 CookieBar.build(requireActivity())
                     .setTitle("Network Connection")
                     .setMessage("No Active Internet!")
+                    .setTitleColor(R.color.swipe_color_4)
                     .setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
@@ -57,6 +58,13 @@ class ScienceFragment : Fragment() {
                 viewModel.getScienceNews(Constants.CATEGORY_SCIENCE).observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
             }
 
         }

@@ -57,6 +57,7 @@ class AllNewsFragment : Fragment() {
                 CookieBar.build(requireActivity())
                     .setTitle("Network Connection")
                     .setMessage("No Active Internet!")
+                    .setTitleColor(R.color.swipe_color_3)
                     .setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
@@ -66,6 +67,14 @@ class AllNewsFragment : Fragment() {
                 viewModel.getAllNews().observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setMessageColor(R.color.white)
+                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
             }
 
         }

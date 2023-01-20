@@ -1,5 +1,6 @@
 package com.mdasrafulalam.news
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.core.view.marginStart
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.coroutineScope
@@ -30,6 +32,7 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val tabLayout = binding.tabLayout
         val viewPage = binding.viewPager
@@ -37,7 +40,9 @@ class HomeFragment : Fragment() {
         viewPage.adapter = tabAdapter
         TabLayoutMediator(tabLayout, viewPage) { tab, position ->
             tab.text = Constants.categoryArray[position]
+            
         }.attach()
+        tabLayout.setSelectedTabIndicatorColor(R.drawable.bg_shape)
     }
 
 

@@ -49,6 +49,7 @@ class TechnologyFragment : Fragment() {
                     .setTitle("Network Connection")
                     .setMessage("No Active Internet!")
                     .setDuration(5000)
+                    .setTitleColor(R.color.swipe_color_2)
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
@@ -58,6 +59,13 @@ class TechnologyFragment : Fragment() {
                 viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY).observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
+                    .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
+                    .show()
             }
 
         }
@@ -75,8 +83,8 @@ class TechnologyFragment : Fragment() {
                 var newsList: List<News>
                 viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY).observe(viewLifecycleOwner, Observer {
                     newsList = it
-                    var collectionSearch: List<News> = newsList.filter {
-                        it.title!!.toUpperCase().contains(query.toString().toUpperCase())
+                    val collectionSearch: List<News> = newsList.filter {
+                        it.title!!.uppercase().contains(query.toString().uppercase())
                     }.toList()
                     adapter.submitList(collectionSearch)
                 })
@@ -87,8 +95,8 @@ class TechnologyFragment : Fragment() {
                 var newsList: List<News>
                 viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY).observe(viewLifecycleOwner, Observer {
                     newsList = it
-                    var collectionSearch: List<News> = newsList.filter {
-                        it.title!!.toUpperCase().contains(newText.toString().toUpperCase())
+                    val collectionSearch: List<News> = newsList.filter {
+                        it.title!!.uppercase().contains(newText.toString().uppercase())
                     }.toList()
                     adapter.submitList(collectionSearch)
                 })
