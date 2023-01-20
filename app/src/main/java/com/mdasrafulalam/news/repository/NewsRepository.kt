@@ -6,7 +6,7 @@ import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 
 class NewsRepository(private val dao:NewsDao) {
-    suspend fun addNews(news: News) : Long = dao.addNews(news)
+    suspend fun addNews(news: News) = dao.addNews(news)
 
     suspend fun deleteNews(news: News) = dao.deleteNews(news)
 

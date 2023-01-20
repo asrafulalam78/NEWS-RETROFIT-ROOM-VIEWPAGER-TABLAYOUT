@@ -7,7 +7,7 @@ import com.mdasrafulalam.news.model.News
 @Dao
 interface NewsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addNews(news: News) : Long
+    suspend fun addNews(news: News)
 
     @Update
     suspend fun updateNews(news: News)

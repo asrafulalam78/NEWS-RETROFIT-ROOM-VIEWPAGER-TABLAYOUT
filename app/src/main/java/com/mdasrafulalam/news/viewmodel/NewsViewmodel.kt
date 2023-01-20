@@ -35,13 +35,38 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
     private val _technologyNewsList = MutableLiveData<List<Article>>()
     val technologyNewsList: LiveData<List<Article>> = _technologyNewsList
 
-
-
     init {
         val dao = NewsDB.getDB(application).getNewsDao()
         repository = NewsRepository(dao)
         refreshRV()
     }
+    fun refreshAllNews(){
+        getTopNews()
+    }
+    fun refreshBusinessnews(){
+        getBusinessNews()
+    }
+    fun refreshEntertainmentNews(){
+        getEntertainmentNews()
+    }
+
+    fun refreshHealthNews(){
+        getHealthNews()
+    }
+    fun refreshScienceNews(){
+        getScienceNews()
+    }
+    fun refreshSportsNews(){
+        getSportsNews()
+    }
+
+    fun refreshTechnologyNews(){
+        getTechnologyNews()
+    }
+    fun refreshBookMaredNews(){
+        getBookMaredNews()
+    }
+
     fun refreshRV(){
         getTopNews()
         getBusinessNews()
@@ -89,7 +114,6 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
                 urlToImage = urlToImage,
                 category = category)
             addNews(news)
-
         }
     }
     private fun getTopNews() {

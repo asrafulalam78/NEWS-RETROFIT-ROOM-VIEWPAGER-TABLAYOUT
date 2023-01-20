@@ -2,7 +2,8 @@ package com.mdasrafulalam.news.utils
 
 class Constants {
     companion object{
-        val API_KEY = "327ca3e10138432280512f1a94f3eaed"
+        val API_KEY = "58de75dc189f4cffb13c97b9bac00371"
+        var selectedTab = ""
         val categoryArray = arrayOf(
             "All News",
             "Business",

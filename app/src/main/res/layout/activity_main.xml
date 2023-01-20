@@ -13,16 +13,6 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/light_green"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:title="NEWS"
-            app:titleTextColor="@color/white"/>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
@@ -31,12 +21,12 @@
             android:layout_height="match_parent"
             app:defaultNavHost="true"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
             app:navGraph="@navigation/nav_graph"
             tools:layout_editor_absoluteX="0dp" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
