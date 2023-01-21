@@ -44,8 +44,4 @@ class HomeFragment : Fragment() {
         }.attach()
         tabLayout.setSelectedTabIndicatorColor(R.drawable.bg_shape)
     }
-
-
-
-
 }

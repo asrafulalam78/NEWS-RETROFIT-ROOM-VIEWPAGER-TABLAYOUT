@@ -1,58 +1,48 @@
 package com.mdasrafulalam.news
 
+import android.R
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import androidx.fragment.app.activityViewModels
+import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
+import com.mdasrafulalam.news.databinding.FragmentSettingsBinding
+import com.mdasrafulalam.news.utils.Constants
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SettingsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var _binding: FragmentSettingsBinding
+    private val viewModel: NewsViewmodel by activityViewModels()
+    private val binding get() =  _binding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        _binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val countryAdapter = ArrayAdapter<String>(
+            requireActivity(),
+            R.layout.simple_spinner_dropdown_item,
+            Constants.countryList
+        )
+        binding.countrySpinner.adapter = countryAdapter
+        binding.countrySpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    Constants.COUNTRY.value = Constants.countryCode[position]
+//                    viewModel.refreshRV(Constants.COUNTRY.value.toString())
+                    Log.d("country", "Selected Country: ${Constants.COUNTRY.value.toString()}")
+                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }
     }

@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        Constants.COUNTRY.value = "us"
         checkPermission()
         if (!Constants.verifyAvailableNetwork(this)){
             CookieBar.build(this)
@@ -84,20 +85,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
+            CookieBar.build(this)
+                .setTitle("Network Connection")
+                .setTitleColor(R.color.white)
+                .setMessage("Internet Permission Required!")
+                .setBackgroundColor(R.color.swipe_color_1)
+                .setSwipeToDismiss(true)
+                .setDuration(5000) // 5 seconds
+                .show()
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.INTERNET),
                 0
             )
-        } else {
-            CookieBar.build(this)
-                .setTitle("Network Connection")
-                .setTitleColor(R.color.swipe_color_1)
-                .setMessage("Permission already granted")
-                .setBackgroundColor(R.color.swipe_color_1)
-                .setSwipeToDismiss(true)
-                .setDuration(5000) // 5 seconds
-                .show()
         }
     }
 

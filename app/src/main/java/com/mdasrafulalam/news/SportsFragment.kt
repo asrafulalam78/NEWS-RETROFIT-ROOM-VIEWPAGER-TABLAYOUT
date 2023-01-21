@@ -1,6 +1,9 @@
 package com.mdasrafulalam.news
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.*
 import android.widget.SearchView
@@ -47,9 +50,11 @@ class SportsFragment : Fragment() {
             if (!Constants.verifyAvailableNetwork(requireContext())){
                 CookieBar.build(requireActivity())
                     .setTitle("Network Connection")
+                    .setBackgroundColor(R.color.swipe_color_4)
+                    .setTitleColor(R.color.white)
                     .setMessage("No Active Internet!")
-                    .setTitleColor(R.color.swipe_color_3)
                     .setDuration(5000)
+                    .setSwipeToDismiss(true)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
@@ -79,26 +84,11 @@ class SportsFragment : Fragment() {
         searchView.queryHint = "Search"
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                var newsList: List<News>
-                viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner, Observer {
-                    newsList = it
-                    var collectionSearch: List<News> = newsList.filter {
-                        it.title!!.toUpperCase().contains(query.toString().toUpperCase())
-                    }.toList()
-                    adapter.submitList(collectionSearch)
-                })
-
+                searchAction(query.toString())
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
-                var newsList: List<News>
-                viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner, Observer {
-                    newsList = it
-                    var collectionSearch: List<News> = newsList.filter {
-                        it.title!!.toUpperCase().contains(newText.toString().toUpperCase())
-                    }.toList()
-                    adapter.submitList(collectionSearch)
-                })
+                searchAction(newText.toString())
                 return true
             }
         })
@@ -107,7 +97,43 @@ class SportsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
             R.id.action_search -> Toast.makeText(requireContext(),"Search", Toast.LENGTH_SHORT).show()
+            R.id.action_voice-> displaySpeechRecognizer()
         }
         return super.onOptionsItemSelected(item)
+    }
+    private fun displaySpeechRecognizer() {
+        //Starts an activity that will prompt the user for speech and send it through a speech recognizer.
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, //Informs the recognizer which speech model to prefer when performing ACTION_RECOGNIZE_SPEECH.
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM //Use a language model based on free-form speech recognition.
+            )
+        }
+        // This starts the activity and populates the intent with the speech text.
+        startActivityForResult(intent, 6)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 6 && resultCode == Activity.RESULT_OK) {
+            val spokenText =
+                data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).let { results ->
+                    results?.get(0) ?: return
+                }
+            Log.d("voice", spokenText)
+            //setting voice text into input field
+            searchAction(spokenText)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun searchAction(query:String){
+        var newsList: List<News>
+        viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner, Observer {
+            newsList = it
+            val collectionSearch: List<News> = newsList.filter {
+            it.title!!.uppercase().contains(query.toString().uppercase())
+        }.toList()
+            adapter.submitList(collectionSearch)
+        })
     }
 }

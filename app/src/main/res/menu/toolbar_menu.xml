@@ -6,4 +6,8 @@
         app:actionViewClass="android.widget.SearchView"
         android:icon="@drawable/search"
         app:showAsAction="always" />
+    <item android:id="@+id/action_voice"
+        android:title="@string/voice_search"
+        android:icon="@drawable/mic"
+        app:showAsAction="always" />
 </menu>

@@ -38,10 +38,10 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
     init {
         val dao = NewsDB.getDB(application).getNewsDao()
         repository = NewsRepository(dao)
-        refreshRV()
+        refreshRV(Constants.COUNTRY.value.toString())
     }
-    fun refreshAllNews(){
-        getTopNews()
+    fun refreshAllNews(country: String){
+        getTopNews(country)
     }
     fun refreshBusinessnews(){
         getBusinessNews()
@@ -67,8 +67,8 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         getBookMaredNews()
     }
 
-    fun refreshRV(){
-        getTopNews()
+    fun refreshRV(country: String){
+        getTopNews(country)
         getBusinessNews()
         getEntertainmentNews()
         getHealthNews()
@@ -116,11 +116,11 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             addNews(news)
         }
     }
-    private fun getTopNews() {
+    private fun getTopNews(country:String) {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _topNewsList.value = NewsApi.retrofitService.getTopNews(Constants.COUNTRY, Constants.API_KEY).articles
+                _topNewsList.value = NewsApi.retrofitService.getTopNews(country, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 Log.d("list", "list: ${_topNewsList.value}")
                 if (topNewsList.value!!.size > 0){
@@ -138,7 +138,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _businessNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_BUSINESS, Constants.API_KEY).articles
+                _businessNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_BUSINESS, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (businessNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
@@ -155,7 +155,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _entertainNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_ENTERTAINMENT, Constants.API_KEY).articles
+                _entertainNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_ENTERTAINMENT, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (entertainNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
@@ -172,7 +172,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _healthNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_HEALTH, Constants.API_KEY).articles
+                _healthNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_HEALTH, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (healthNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
@@ -189,7 +189,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _scienceNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_SCIENCE, Constants.API_KEY).articles
+                _scienceNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_SCIENCE, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (scienceNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
@@ -206,7 +206,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _sportsNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_SPORTS, Constants.API_KEY).articles
+                _sportsNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_SPORTS, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (sportsNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
@@ -223,7 +223,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _technologyNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY, Constants.CATEGORY_TECHNOLOGY, Constants.API_KEY).articles
+                _technologyNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_TECHNOLOGY, Constants.API_KEY).articles
                 _status.value = NewsApiStatus.DONE
                 if (technologyNewsList.value!!.size > 0){
                     viewModelScope.launch(Dispatchers.IO) {
