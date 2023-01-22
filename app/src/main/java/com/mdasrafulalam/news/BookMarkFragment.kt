@@ -47,7 +47,7 @@ class BookMarkFragment : Fragment() {
             binding.boomarkRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())){
                 CookieBar.build(requireActivity())
-                    .setTitle("Network Connection")
+                    .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setTitleColor(R.color.white)
                     .setSwipeToDismiss(true)
@@ -64,7 +64,8 @@ class BookMarkFragment : Fragment() {
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
-                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setBackgroundColor(R.color.color_tab_text)
+                    .setIcon(R.drawable.success)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()

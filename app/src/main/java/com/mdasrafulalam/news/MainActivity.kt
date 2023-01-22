@@ -20,6 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.ActivityMainBinding
 import com.mdasrafulalam.news.utils.Constants
+import com.mdasrafulalam.news.workers.WorkManagerUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import org.aviran.cookiebar2.CookieBar
 
@@ -33,8 +34,8 @@ val categoryArray = arrayOf(
     "Technology",
     "Health"
 )
-class MainActivity : AppCompatActivity() {
 
+class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: NewsViewmodel
     lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
@@ -44,11 +45,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        WorkManagerUtils().syncData(applicationContext)
         Constants.COUNTRY.value = "us"
         checkPermission()
-        if (!Constants.verifyAvailableNetwork(this)){
+        if (!Constants.verifyAvailableNetwork(this)) {
             CookieBar.build(this)
-                .setTitle("Network Connection")
+                .setTitle(getString(R.string.network_conncetion))
                 .setMessage("No Active Internet!")
                 .setDuration(5000)
                 .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
@@ -63,15 +65,15 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener{ _, nd: NavDestination, _ ->
-            if (nd.id == R.id.newsDetailsFragment || nd.id==R.id.webViewFragment){
+        navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
+            if (nd.id == R.id.newsDetailsFragment || nd.id == R.id.webViewFragment) {
                 navView.visibility = View.GONE
-            }else{
+            } else {
                 navView.visibility = View.VISIBLE
             }
         }
         binding.bottomNavigationView.setOnItemSelectedListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.homeFragment -> navController.navigate(R.id.homeFragment)
                 R.id.bookMarkFragment -> navController.navigate(R.id.bookMarkFragment)
                 else -> navController.navigate(R.id.settingsFragment)
@@ -79,14 +81,19 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.INTERNET
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
             CookieBar.build(this)
-                .setTitle("Network Connection")
+                .setTitle(getString(R.string.network_conncetion))
                 .setTitleColor(R.color.white)
                 .setMessage("Internet Permission Required!")
                 .setBackgroundColor(R.color.swipe_color_1)

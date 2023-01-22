@@ -10,8 +10,7 @@
         tools:ignore="AlwaysShowAction" />
     <item android:id="@+id/action_voice"
         android:title="@string/voice_search"
-        android:tooltipText="@string/tell_query"
+        android:tooltipText="Tell me your query"
         android:icon="@drawable/mic"
-        app:showAsAction="always"
-        tools:ignore="UnusedAttribute" />
+        app:showAsAction="always" />
 </menu>

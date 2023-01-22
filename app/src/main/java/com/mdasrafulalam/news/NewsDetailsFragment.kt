@@ -1,5 +1,7 @@
 package com.mdasrafulalam.news
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,15 +22,21 @@ class NewsDetailsFragment : Fragment() {
         binding = FragmentNewsDetailsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val newsItem = arguments?.getSerializable("newsItem") as News
         binding.newsItem = newsItem
+        binding.shareNewsFAB.setOnClickListener {
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.type="text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, newsItem.url);
+            startActivity(Intent.createChooser(shareIntent,"Share Via"))
+        }
         binding.readMoreTV.setOnClickListener(View.OnClickListener {
-            val action = NewsDetailsFragmentDirections.actionNewsDetailsFragmentToWebViewFragment(newsItem.url)
+            val action =
+                NewsDetailsFragmentDirections.actionNewsDetailsFragmentToWebViewFragment(newsItem.url)
             findNavController().navigate(action)
         })
-        binding.addBookmarkFAB.setOnClickListener {
-
-        }
     }
 }

@@ -29,6 +29,7 @@ class ScienceFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,14 +43,14 @@ class ScienceFragment : Fragment() {
         adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.scienceNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.scienceNewsRV.adapter = adapter
-        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE).observe(viewLifecycleOwner){
+        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-        binding.scienceSwipRefreshLayout.setOnRefreshListener{
+        binding.scienceSwipRefreshLayout.setOnRefreshListener {
             binding.scienceSwipRefreshLayout.isRefreshing = false
-            if (!Constants.verifyAvailableNetwork(requireContext())){
+            if (!Constants.verifyAvailableNetwork(requireContext())) {
                 CookieBar.build(requireActivity())
-                    .setTitle("Network Connection")
+                    .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setTitleColor(R.color.white)
                     .setSwipeToDismiss(true)
@@ -58,15 +59,16 @@ class ScienceFragment : Fragment() {
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
-            }else{
+            } else {
                 viewModel.refreshScienceNews()
-                viewModel.getScienceNews(Constants.CATEGORY_SCIENCE).observe(viewLifecycleOwner){
+                viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
-                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setBackgroundColor(R.color.color_tab_text)
+                    .setIcon(R.drawable.success)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
@@ -74,11 +76,13 @@ class ScienceFragment : Fragment() {
 
         }
     }
+
     fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar_menu,menu)
+        inflater.inflate(R.menu.toolbar_menu, menu)
         val search = menu?.findItem(R.id.action_search)
         val searchView = search?.actionView as SearchView
         searchView.queryHint = "Search"
@@ -87,6 +91,7 @@ class ScienceFragment : Fragment() {
                 searchAction(query.toString())
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAction(newText.toString())
                 return true
@@ -94,9 +99,11 @@ class ScienceFragment : Fragment() {
         })
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.action_search -> Toast.makeText(requireContext(),"Search", Toast.LENGTH_SHORT).show()
+        when (item.itemId) {
+            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
+                .show()
             R.id.action_voice -> displaySpeechRecognizer()
 
         }
@@ -128,13 +135,14 @@ class ScienceFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun searchAction(query:String){
+    fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE).observe(viewLifecycleOwner, Observer {
+        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
             newsList = it
-            ;val collectionSearch: List<News> = newsList.filter {
-            it.title!!.uppercase().contains(query.toString().uppercase())
-        }.toList()
+            ;
+            val collectionSearch: List<News> = newsList.filter {
+                it.title!!.uppercase().contains(query.toString().uppercase())
+            }.toList()
             adapter.submitList(collectionSearch)
         })
     }

@@ -6,10 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.webkit.WebViewClient
-import com.mdasrafulalam.news.databinding.FragmentNewsDetailsBinding
 import com.mdasrafulalam.news.databinding.FragmentWebViewBinding
-import com.mdasrafulalam.news.model.News
 
 class WebViewFragment : Fragment() {
     private lateinit var binding: FragmentWebViewBinding

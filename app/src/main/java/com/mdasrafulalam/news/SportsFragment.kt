@@ -14,7 +14,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentSportsBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
@@ -29,6 +28,7 @@ class SportsFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,17 +39,17 @@ class SportsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-         adapter = NewsRecyclerViewAdapter(::updateBookmark)
+        adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.sportsNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.sportsNewsRV.adapter = adapter
-        viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner){
+        viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-        binding.sportsSwipRefreshLayout.setOnRefreshListener{
+        binding.sportsSwipRefreshLayout.setOnRefreshListener {
             binding.sportsSwipRefreshLayout.isRefreshing = false
-            if (!Constants.verifyAvailableNetwork(requireContext())){
+            if (!Constants.verifyAvailableNetwork(requireContext())) {
                 CookieBar.build(requireActivity())
-                    .setTitle("Network Connection")
+                    .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setTitleColor(R.color.white)
                     .setMessage("No Active Internet!")
@@ -58,15 +58,16 @@ class SportsFragment : Fragment() {
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
-            }else{
+            } else {
                 viewModel.refreshSportsNews()
-                viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner){
+                viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
-                    .setBackgroundColor(R.color.swipe_color_1)
+                    .setBackgroundColor(R.color.color_tab_text)
+                    .setIcon(R.drawable.success)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
@@ -74,11 +75,13 @@ class SportsFragment : Fragment() {
 
         }
     }
+
     fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar_menu,menu)
+        inflater.inflate(R.menu.toolbar_menu, menu)
         val search = menu?.findItem(R.id.action_search)
         val searchView = search?.actionView as SearchView
         searchView.queryHint = "Search"
@@ -87,6 +90,7 @@ class SportsFragment : Fragment() {
                 searchAction(query.toString())
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAction(newText.toString())
                 return true
@@ -94,13 +98,16 @@ class SportsFragment : Fragment() {
         })
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.action_search -> Toast.makeText(requireContext(),"Search", Toast.LENGTH_SHORT).show()
-            R.id.action_voice-> displaySpeechRecognizer()
+        when (item.itemId) {
+            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
+                .show()
+            R.id.action_voice -> displaySpeechRecognizer()
         }
         return super.onOptionsItemSelected(item)
     }
+
     private fun displaySpeechRecognizer() {
         //Starts an activity that will prompt the user for speech and send it through a speech recognizer.
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -126,13 +133,13 @@ class SportsFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun searchAction(query:String){
+    fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getSportsNews(Constants.CATEGORY_SPORTS).observe(viewLifecycleOwner, Observer {
+        viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
             newsList = it
             val collectionSearch: List<News> = newsList.filter {
-            it.title!!.uppercase().contains(query.toString().uppercase())
-        }.toList()
+                it.title!!.uppercase().contains(query.toString().uppercase())
+            }.toList()
             adapter.submitList(collectionSearch)
         })
     }

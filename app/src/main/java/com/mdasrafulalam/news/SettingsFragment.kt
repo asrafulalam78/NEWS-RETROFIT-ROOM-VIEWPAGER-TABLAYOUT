@@ -11,14 +11,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.activityViewModels
 import com.mdasrafulal.NewsViewmodel
-import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.FragmentSettingsBinding
 import com.mdasrafulalam.news.utils.Constants
+import org.aviran.cookiebar2.CookieBar
 
 class SettingsFragment : Fragment() {
     private lateinit var _binding: FragmentSettingsBinding
     private val viewModel: NewsViewmodel by activityViewModels()
-    private val binding get() =  _binding
+    private val binding get() = _binding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,15 +33,24 @@ class SettingsFragment : Fragment() {
             requireActivity(),
             R.layout.simple_spinner_dropdown_item,
             Constants.countryList
+        
         )
         binding.countrySpinner.adapter = countryAdapter
+//        binding.countrySpinner.setSelection(24)
         binding.countrySpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+
                     Constants.COUNTRY.value = Constants.countryCode[position]
-//                    viewModel.refreshRV(Constants.COUNTRY.value.toString())
                     Log.d("country", "Selected Country: ${Constants.COUNTRY.value.toString()}")
+                    viewModel.refreshData()
                 }
+
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                 }
             }

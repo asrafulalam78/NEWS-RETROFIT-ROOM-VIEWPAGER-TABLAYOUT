@@ -1,9 +1,7 @@
 package com.mdasrafulalam.news
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
@@ -13,17 +11,19 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.adapter.MainAdapter
+import com.mdasrafulalam.news.adapter.MainLoadStateAdapter
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
-import com.mdasrafulalam.news.databinding.FragmentHomeBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
-import kotlinx.android.synthetic.main.fragment_all_news.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.aviran.cookiebar2.CookieBar
 
 class AllNewsFragment : Fragment() {
@@ -49,18 +49,26 @@ class AllNewsFragment : Fragment() {
         adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.newsRV.adapter = adapter
-        Constants.COUNTRY.observe(viewLifecycleOwner){
-            viewModel.refreshAllNews(it)
-        }
-        viewModel.getAllNews().observe(viewLifecycleOwner){
+//        binding.newsRV.adapter = adapter.withLoadStateFooter(
+//            MainLoadStateAdapter()
+//        )
+//
+//        lifecycleScope.launch {
+//            viewModel.data.collectLatest {
+//                adapter.submitData(it)
+//                adapter.refresh()
+//                Log.d("list", "list: $it")
+//            }
+//        }
+
+        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner){
             adapter.submitList(it)
-            Log.d("list", "list: $it")
         }
         swipeRefreshLayout.setOnRefreshListener{
             swipeRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())){
                 CookieBar.build(requireActivity())
-                    .setTitle("Network Connection")
+                    .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setTitleColor(R.color.white)
                     .setSwipeToDismiss(true)
@@ -70,17 +78,16 @@ class AllNewsFragment : Fragment() {
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
             }else{
-                Constants.COUNTRY.observe(viewLifecycleOwner){
-                    viewModel.refreshAllNews(it)
-                }
-                viewModel.getAllNews().observe(viewLifecycleOwner){
+                viewModel.refreshAllNews()
+                viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner){
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
+                    .setBackgroundColor(R.color.color_tab_text)
+                    .setIcon(R.drawable.success)
                     .setMessageColor(R.color.white)
-                    .setBackgroundColor(R.color.swipe_color_1)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
@@ -144,13 +151,14 @@ class AllNewsFragment : Fragment() {
 
     fun searchAction(query:String){
         var newsList: List<News>
-        viewModel.getAllNews().observe(viewLifecycleOwner, Observer {
+        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
             newsList = it
-            ;val collectionSearch: List<News> = newsList.filter {
+            val collectionSearch: List<News> = newsList.filter {
                 it.title!!.uppercase().contains(query.toString().uppercase())
             }.toList()
             adapter.submitList(collectionSearch)
         })
+
     }
 
 }

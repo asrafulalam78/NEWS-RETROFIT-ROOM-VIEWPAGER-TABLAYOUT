@@ -15,11 +15,17 @@ interface NewsDao {
     @Delete
     suspend fun deleteNews(news: News)
 
-    @Query("select * from tbl_news")
-    fun getAllNews() : LiveData<List<News>>
+    @Query("select * from tbl_news where category = :category and country = :country")
+    fun getAllNews(category: String, country:String) : LiveData<List<News>>
 
-    @Query("select * from tbl_news where category = :category")
-    fun getNewsByCategory(category: String) : LiveData<List<News>>
+//    @Query("select * from tbl_news ORDER BY id ASC LIMIT :limit OFFSET :offset")
+//    fun getTopNews(limit:Int, offset:Int) : List<News>
+
+    @Query("select * from tbl_news where category = :category and country = :country")
+    fun getNewsByCategory(category: String, country: String) : LiveData<List<News>>
+
+    @Query("delete from tbl_news where category = :category")
+    fun deleteNewsByCategory(category: String)
 
     @Query("select * from tbl_news where is_bookmared = 1")
     fun getBookMaredNews() : LiveData<List<News>>

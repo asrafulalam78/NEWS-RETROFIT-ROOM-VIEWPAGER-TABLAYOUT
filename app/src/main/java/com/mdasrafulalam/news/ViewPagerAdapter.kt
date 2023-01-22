@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.mdasrafulalam.news.utils.Constants
 
 
-class ViewPagerAdapter(fragmentManager: FragmentManager,lifecycle: Lifecycle) :
+class ViewPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
     private val NUM_TABS = 7
     override fun getItemCount(): Int {
@@ -32,14 +32,15 @@ class ViewPagerAdapter(fragmentManager: FragmentManager,lifecycle: Lifecycle) :
                 Constants.selectedTab = categoryArray.get(3)
                 return ScienceFragment()
             }
-            4 -> {Constants.selectedTab = categoryArray.get(4)
+            4 -> {
+                Constants.selectedTab = categoryArray.get(4)
                 return SportsFragment()
             }
             5 -> {
                 Constants.selectedTab = categoryArray.get(5)
                 return TechnologyFragment()
             }
-            else-> {
+            else -> {
                 Constants.selectedTab = categoryArray.get(6)
                 return HealthFragment()
             }

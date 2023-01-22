@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
-     val viewModel: NewsViewmodel by activityViewModels()
+    val viewModel: NewsViewmodel by activityViewModels()
     private lateinit var binding: FragmentHomeBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +40,6 @@ class HomeFragment : Fragment() {
         viewPage.adapter = tabAdapter
         TabLayoutMediator(tabLayout, viewPage) { tab, position ->
             tab.text = Constants.categoryArray[position]
-            
         }.attach()
-        tabLayout.setSelectedTabIndicatorColor(R.drawable.bg_shape)
     }
 }

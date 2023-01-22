@@ -7,20 +7,22 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "tbl_news")
 class News(
-       @PrimaryKey(autoGenerate = true)
-       @ColumnInfo(name = "id")
-       val newsId: Int = 0,
+//       @PrimaryKey(autoGenerate = true)
+//       @ColumnInfo(name = "id")
+//       val newsId: Int = 0,
        val author: String?,
        val content: String?,
        val description: String?,
        @ColumnInfo(name = "date_time")
        val publishedAt: String?,
        val title: String?,
+       @PrimaryKey
        val url: String,
        @ColumnInfo(name = "image_url")
        @Nullable
        val urlToImage: String?,
        val category: String?,
        @ColumnInfo(name = "is_bookmared")
-       var isBookmared: Boolean = false
+       var isBookmared: Boolean = false,
+       var country:String = "us"
 ) : java.io.Serializable
