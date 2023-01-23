@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.adapter.BookMarkAdapter
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentBookMarkBinding
 import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
@@ -23,7 +24,7 @@ import org.aviran.cookiebar2.CookieBar
 class BookMarkFragment : Fragment() {
     private lateinit var binding: FragmentBookMarkBinding
     private val viewModel: NewsViewmodel by activityViewModels()
-    private lateinit var adapter: NewsRecyclerViewAdapter
+    private lateinit var adapter: BookMarkAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -37,7 +38,7 @@ class BookMarkFragment : Fragment() {
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
+        adapter = BookMarkAdapter(::updateBookmark)
         binding.bookmrkNewsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.bookmrkNewsRV.adapter = adapter
         viewModel.getBookMaredNews().observe(viewLifecycleOwner){

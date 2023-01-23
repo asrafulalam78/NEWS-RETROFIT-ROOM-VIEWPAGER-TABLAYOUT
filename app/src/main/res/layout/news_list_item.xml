@@ -94,7 +94,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_marginStart="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/bookmark"
+                    android:src="@drawable/broken_image"
                     app:setImageResources="@{newsItem.urlToImage}"
                     tools:ignore="ContentDescription" />
 

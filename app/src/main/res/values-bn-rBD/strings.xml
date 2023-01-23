@@ -27,4 +27,6 @@
     <string name="read_more_btn">আরও পড়ুন ...</string>
     <string name="tell_query">আমাকে আপনার প্রশ্ন বলুন</string>
     <string name="network_conncetion">নেটওয়ার্ক সংযোগ</string>
+    <string name="enable_dark_mode">ডার্ক মোড চালু করুন</string>
+    <string name="disable_dark_mode">অন্ধকার মোড বন্ধ করুন</string>
 </resources>

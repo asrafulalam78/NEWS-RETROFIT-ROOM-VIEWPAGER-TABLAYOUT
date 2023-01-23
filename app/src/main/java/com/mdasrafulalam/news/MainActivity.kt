@@ -3,13 +3,21 @@ package com.mdasrafulalam.news
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.text.Layout
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -19,9 +27,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.ActivityMainBinding
+import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
 import com.mdasrafulalam.news.workers.WorkManagerUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.observeOn
+import kotlinx.coroutines.launch
 import org.aviran.cookiebar2.CookieBar
 
 
@@ -34,17 +45,23 @@ val categoryArray = arrayOf(
     "Technology",
     "Health"
 )
-
 class MainActivity : AppCompatActivity() {
+
     private lateinit var viewModel: NewsViewmodel
     lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var preference:DataPreference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        viewModel = ViewModelProvider(this)[NewsViewmodel::class.java]
+        preference = DataPreference(applicationContext)
+        preference.selectedCountryFlow.asLiveData().observe(this) {
+            Constants.COUNTRY.value = it
+        }
         WorkManagerUtils().syncData(applicationContext)
         Constants.COUNTRY.value = "us"
         checkPermission()
@@ -59,21 +76,22 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel = ViewModelProvider(this)[NewsViewmodel::class.java]
         val navView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        navView.itemIconTintList = null
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
-            if (nd.id == R.id.newsDetailsFragment || nd.id == R.id.webViewFragment) {
+        navController.addOnDestinationChangedListener{ _, nd: NavDestination, _ ->
+            if (nd.id == R.id.newsDetailsFragment || nd.id==R.id.webViewFragment){
                 navView.visibility = View.GONE
-            } else {
+            }else{
                 navView.visibility = View.VISIBLE
             }
         }
         binding.bottomNavigationView.setOnItemSelectedListener {
-            when (it.itemId) {
+            when(it.itemId) {
                 R.id.homeFragment -> navController.navigate(R.id.homeFragment)
                 R.id.bookMarkFragment -> navController.navigate(R.id.bookMarkFragment)
                 else -> navController.navigate(R.id.settingsFragment)
@@ -81,7 +99,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
@@ -96,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.network_conncetion))
                 .setTitleColor(R.color.white)
                 .setMessage("Internet Permission Required!")
-                .setBackgroundColor(R.color.swipe_color_1)
+                .setBackgroundColor(R.color.swipe_color_3)
                 .setSwipeToDismiss(true)
                 .setDuration(5000) // 5 seconds
                 .show()

@@ -7,6 +7,7 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/settingsFragmentLL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -21,7 +22,23 @@
             android:text="@string/settings"
             android:textColor="@color/black"
             android:textSize="50sp" />
-
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_tab_text"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+            <Switch
+                android:id="@+id/themeSwitch"
+                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/enable_dark_mode"
+                android:padding="8dp"
+                android:textSize="25sp"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

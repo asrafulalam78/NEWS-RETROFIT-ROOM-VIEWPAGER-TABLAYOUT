@@ -6,14 +6,11 @@
     <data>
 
     </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".MainActivity">
-
-
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
             android:name="androidx.navigation.fragment.NavHostFragment"
@@ -26,13 +23,20 @@
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:elevation="8dp"
+            app:itemRippleColor="#A5D6A7"
+            android:layout_height="60dp"
+            app:itemIconSize="30dp"
+            android:textSize="30sp"
+            app:labelVisibilityMode="auto"
+            android:background="@drawable/botton_nav_bg"
+            android:layout_marginBottom="@dimen/dp_10"
             app:elevation="8dp"
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:menu="@menu/navigation_menu" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

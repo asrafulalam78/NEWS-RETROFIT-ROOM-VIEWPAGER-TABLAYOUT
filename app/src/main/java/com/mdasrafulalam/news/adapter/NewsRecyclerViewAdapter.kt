@@ -16,7 +16,7 @@ class NewsRecyclerViewAdapter(val addBookmarkCallback: (News) -> Unit) :
     class NewsViewHolder( val binding: NewsListItemBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(newsModel: News){
             binding.newsItem = newsModel
-            binding.moreCard.setOnClickListener {
+            binding.itemCardView.setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToNewsDetailsFragment(newsItem = newsModel)
                 it.findNavController().navigate(action)
             }
@@ -47,5 +47,6 @@ class NewsRecyclerViewAdapter(val addBookmarkCallback: (News) -> Unit) :
             holder.bind(newsModel)
             addBookmarkCallback(newsModel)
         }
+
     }
 }

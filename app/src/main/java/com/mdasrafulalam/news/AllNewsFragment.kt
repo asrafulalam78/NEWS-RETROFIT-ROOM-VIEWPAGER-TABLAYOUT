@@ -11,22 +11,25 @@ import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.adapter.BookMarkAdapter
 import com.mdasrafulalam.news.adapter.MainAdapter
 import com.mdasrafulalam.news.adapter.MainLoadStateAdapter
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.model.News
+import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.aviran.cookiebar2.CookieBar
 
 class AllNewsFragment : Fragment() {
+    private lateinit var preference:DataPreference
     private lateinit var binding: FragmentAllNewsBinding
     private  lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var adapter: NewsRecyclerViewAdapter
@@ -49,6 +52,10 @@ class AllNewsFragment : Fragment() {
         adapter = NewsRecyclerViewAdapter(::updateBookmark)
         binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
         binding.newsRV.adapter = adapter
+        preference = DataPreference(requireContext())
+        preference.selectedCountryFlow.asLiveData().observe(requireActivity()) {
+            Constants.COUNTRY.value = it
+        }
 //        binding.newsRV.adapter = adapter.withLoadStateFooter(
 //            MainLoadStateAdapter()
 //        )
@@ -56,8 +63,7 @@ class AllNewsFragment : Fragment() {
 //        lifecycleScope.launch {
 //            viewModel.data.collectLatest {
 //                adapter.submitData(it)
-//                adapter.refresh()
-//                Log.d("list", "list: $it")
+//                Log.d("listdata", "list: $it")
 //            }
 //        }
 

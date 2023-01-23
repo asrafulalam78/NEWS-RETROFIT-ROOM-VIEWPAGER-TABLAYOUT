@@ -102,4 +102,7 @@ dependencies {
     // WorkManager dependency
     implementation "androidx.work:work-runtime-ktx:2.7.1"
 
+    //cookie
+    implementation 'org.aviran.cookiebar2:cookiebar2:1.1.5'
+
 }

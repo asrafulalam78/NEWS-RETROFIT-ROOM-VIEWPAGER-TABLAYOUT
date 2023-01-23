@@ -27,4 +27,6 @@
     <string name="read_more_btn">WEITERLESEN ...</string>
     <string name="tell_query">Sagen Sie mir Ihre Anfrage</string>
     <string name="network_conncetion">Netzwerkverbindung</string>
+    <string name="enable_dark_mode">Dunkelmodus aktivieren</string>
+    <string name="disable_dark_mode">Dunkelmodus deaktivieren</string>
 </resources>

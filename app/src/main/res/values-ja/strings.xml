@@ -27,4 +27,6 @@
     <string name="read_more_btn">続きを読む ...</string>
     <string name="tell_query">あなたの質問を教えてください</string>
     <string name="network_conncetion">ネットワーク接続</string>
+    <string name="enable_dark_mode">ダークモードを有効にする</string>
+    <string name="disable_dark_mode">ダークモードを無効にする</string>
 </resources>

@@ -18,7 +18,7 @@ interface NewsDao {
     @Query("select * from tbl_news where category = :category and country = :country")
     fun getAllNews(category: String, country:String) : LiveData<List<News>>
 
-//    @Query("select * from tbl_news ORDER BY id ASC LIMIT :limit OFFSET :offset")
+//    @Query("select * from tbl_news where catrgory = 'top_news' LIMIT :limit OFFSET :offset")
 //    fun getTopNews(limit:Int, offset:Int) : List<News>
 
     @Query("select * from tbl_news where category = :category and country = :country")

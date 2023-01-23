@@ -10,13 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mdasrafulalam.news.R
 import java.sql.Time
-import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.Period
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
 import java.util.*
 
 @BindingAdapter("app:setImageResources")
@@ -83,8 +78,12 @@ fun setDateTime(textView: TextView, datetime: String) {
             textView.text =
                 String.format("Published at: " + dt.dayOfMonth + "/" + dt.monthValue + "/" + dt.year)
         } else {
-            diff = difference(stop, start)
-            textView.text = String.format("Published " + diff.hours + " hours ago")
+            diff = difference(start, stop)
+            var hours = diff.hours
+            if (hours<0.0){
+                hours = hours * -1
+            }
+            textView.text = String.format("Published " + hours + " hours ago")
         }
         Log.d("checktime", "delay: $hourDelay, $hourDelay")
     }

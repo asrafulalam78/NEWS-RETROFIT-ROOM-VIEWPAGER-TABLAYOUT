@@ -11,24 +11,6 @@
         android:label="@string/home"
         tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_homeFragment_to_businessFragment"
-            app:destination="@id/businessFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_healthFragment"
-            app:destination="@id/healthFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_scienceFragment"
-            app:destination="@id/scienceFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_technologyFragment"
-            app:destination="@id/technologyFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_sportsFragment"
-            app:destination="@id/sportsFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_allNewsFragment"
-            app:destination="@id/allNewsFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_newsDetailsFragment"
             app:destination="@id/newsDetailsFragment" />
     </fragment>
@@ -107,7 +89,11 @@
         android:id="@+id/bookMarkFragment"
         android:name="com.mdasrafulalam.news.BookMarkFragment"
         android:label="@string/bookmark"
-        tools:layout="@layout/fragment_book_mark" />
+        tools:layout="@layout/fragment_book_mark" >
+        <action
+            android:id="@+id/action_bookMarkFragment_to_newsDetailsFragment"
+            app:destination="@id/newsDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.mdasrafulalam.news.SettingsFragment"

@@ -1,14 +1,12 @@
 package com.mdasrafulal
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
 import com.mdasrafulalam.news.db.NewsDB
 import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
@@ -42,19 +40,17 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         val dao = NewsDB.getDB(application).getNewsDao()
         repository = NewsRepository(dao)
         refreshData()
-        WorkManagerUtils().syncData(application)
     }
-
-   /* val data = Pager(
-        PagingConfig(
-            pageSize = 20,
-            enablePlaceholders = false,
-            initialLoadSize = 20
-        ),
-    ) {
-        val dao = NewsDB.getDB(application).getNewsDao()
-        MainPagingSource(dao)
-    }.*//*flow.cachedIn(viewModelScope)*/
+//    val data = Pager(
+//        PagingConfig(
+//            pageSize = 20,
+//            enablePlaceholders = false,
+//            initialLoadSize = 20
+//        ),
+//    ) {
+//        val dao = NewsDB.getDB(application).getNewsDao()
+//        MainPagingSource(dao)
+//    }.flow.cachedIn(viewModelScope)
 
     fun refreshAllNews(){
         getTopNews()
