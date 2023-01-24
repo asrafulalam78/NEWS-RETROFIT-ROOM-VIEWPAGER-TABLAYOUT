@@ -10,14 +10,12 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
-import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
@@ -41,12 +39,19 @@ class BusinessFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.businessNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner, ::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.businessNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.businessNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.businessNewsRV.adapter = adapter
-        viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
         binding.businessFragmentSwipRefreshLayout.setOnRefreshListener {
             binding.businessFragmentSwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
@@ -61,8 +66,11 @@ class BusinessFragment : Fragment() {
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
             } else {
-                viewModel.refreshBusinessnews()
-                viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+                viewModel.refreshBusinessNews()
+                viewModel.getBusinessNews(
+                    Constants.CATEGORY_BUSINESS,
+                    Constants.COUNTRY.value.toString()
+                ).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
@@ -78,10 +86,11 @@ class BusinessFragment : Fragment() {
         }
     }
 
-    fun updateBookmark(news: News) {
+    private fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_menu, menu)
         val search = menu?.findItem(R.id.action_search)
@@ -101,6 +110,7 @@ class BusinessFragment : Fragment() {
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
@@ -122,6 +132,7 @@ class BusinessFragment : Fragment() {
         startActivityForResult(intent, 2)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 2 && resultCode == Activity.RESULT_OK) {
             val spokenText =
@@ -137,7 +148,7 @@ class BusinessFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS,Constants.COUNTRY.value.toString())
+        viewModel.getBusinessNews(Constants.CATEGORY_BUSINESS, Constants.COUNTRY.value.toString())
             .observe(viewLifecycleOwner, Observer {
                 newsList = it
                 ;

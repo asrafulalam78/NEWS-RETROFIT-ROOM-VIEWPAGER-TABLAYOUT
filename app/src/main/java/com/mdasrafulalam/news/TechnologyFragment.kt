@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
@@ -20,7 +21,6 @@ import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
 
 class TechnologyFragment : Fragment() {
-
     private lateinit var binding: FragmentTechnologyBinding
     private val viewModel: NewsViewmodel by activityViewModels()
     private lateinit var adapter: NewsRecyclerViewAdapter
@@ -39,10 +39,19 @@ class TechnologyFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.technologyNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.technologyNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.technologyNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.technologyNewsRV.adapter = adapter
-        viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+        viewModel.getTechnologyNews(
+            Constants.CATEGORY_TECHNOLOGY,
+            Constants.COUNTRY.value.toString()
+        ).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
         binding.technologySwipRefreshLayout.setOnRefreshListener {
@@ -60,7 +69,10 @@ class TechnologyFragment : Fragment() {
                     .show()
             } else {
                 viewModel.refreshTechnologyNews()
-                viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY,Constants.COUNTRY.value.toString())
+                viewModel.getTechnologyNews(
+                    Constants.CATEGORY_TECHNOLOGY,
+                    Constants.COUNTRY.value.toString()
+                )
                     .observe(viewLifecycleOwner) {
                         adapter.submitList(it)
                     }
@@ -136,7 +148,10 @@ class TechnologyFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getTechnologyNews(Constants.CATEGORY_TECHNOLOGY,Constants.COUNTRY.value.toString())
+        viewModel.getTechnologyNews(
+            Constants.CATEGORY_TECHNOLOGY,
+            Constants.COUNTRY.value.toString()
+        )
             .observe(viewLifecycleOwner, Observer {
                 newsList = it
                 val collectionSearch: List<News> = newsList.filter {

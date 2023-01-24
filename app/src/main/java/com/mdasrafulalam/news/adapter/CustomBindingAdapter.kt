@@ -61,10 +61,10 @@ fun setDateTime(textView: TextView, datetime: String) {
         val diff: Time
         if (todayDay < fromDay) {
             dayDelay = (todayDay + 30) - fromDay
-            fromMonth = fromMonth + 1
+            fromMonth += 1
             if (todayMonth < fromMonth) {
                 monthDelay = (todayMonth + 12) - fromMonth
-                fromYear = fromYear + 1
+                fromYear += 1
             } else {
                 monthDelay = todayMonth - fromMonth
                 yearDelay = todayYear - fromYear
@@ -80,10 +80,10 @@ fun setDateTime(textView: TextView, datetime: String) {
         } else {
             diff = difference(start, stop)
             var hours = diff.hours
-            if (hours<0.0){
+            if (hours < 0.0) {
                 hours = hours * -1
             }
-            textView.text = String.format("Published " + hours + " hours ago")
+            textView.text = String.format("Published $hours hours ago")
         }
         Log.d("checktime", "delay: $hourDelay, $hourDelay")
     }

@@ -11,17 +11,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentScienceBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
 
 class ScienceFragment : Fragment() {
-
     private lateinit var binding: FragmentScienceBinding
     private val viewModel: NewsViewmodel by activityViewModels()
     private lateinit var adapter: NewsRecyclerViewAdapter
@@ -40,12 +39,19 @@ class ScienceFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.scienceNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.scienceNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.scienceNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.scienceNewsRV.adapter = adapter
-        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
         binding.scienceSwipRefreshLayout.setOnRefreshListener {
             binding.scienceSwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
@@ -61,7 +67,10 @@ class ScienceFragment : Fragment() {
                     .show()
             } else {
                 viewModel.refreshScienceNews()
-                viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+                viewModel.getScienceNews(
+                    Constants.CATEGORY_SCIENCE,
+                    Constants.COUNTRY.value.toString()
+                ).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
@@ -137,13 +146,14 @@ class ScienceFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
-            newsList = it
-            ;
-            val collectionSearch: List<News> = newsList.filter {
-                it.title!!.uppercase().contains(query.toString().uppercase())
-            }.toList()
-            adapter.submitList(collectionSearch)
-        })
+        viewModel.getScienceNews(Constants.CATEGORY_SCIENCE, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner, Observer {
+                newsList = it
+                ;
+                val collectionSearch: List<News> = newsList.filter {
+                    it.title!!.uppercase().contains(query.toString().uppercase())
+                }.toList()
+                adapter.submitList(collectionSearch)
+            })
     }
 }

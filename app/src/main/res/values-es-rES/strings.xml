@@ -29,4 +29,5 @@
     <string name="network_conncetion">Conexión de red</string>
     <string name="enable_dark_mode">Habilitar modo oscuro</string>
     <string name="disable_dark_mode">Deshabilitar el modo oscuro</string>
+    <string name="prefered_layout">Prefered Layout</string>
 </resources>

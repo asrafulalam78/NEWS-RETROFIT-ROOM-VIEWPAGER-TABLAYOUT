@@ -11,12 +11,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.BookMarkAdapter
-import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentBookMarkBinding
-import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
@@ -29,6 +28,7 @@ class BookMarkFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,16 +37,24 @@ class BookMarkFragment : Fragment() {
         binding = FragmentBookMarkBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = BookMarkAdapter(::updateBookmark)
-        binding.bookmrkNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.bookmrkNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.bookmrkNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.bookmrkNewsRV.adapter = adapter
-        viewModel.getBookMaredNews().observe(viewLifecycleOwner){
+        viewModel.refreshBookMarkedNews()
+        viewModel.getBookMaredNews().observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-        binding.boomarkRefreshLayout.setOnRefreshListener{
+        binding.boomarkRefreshLayout.setOnRefreshListener {
             binding.boomarkRefreshLayout.isRefreshing = false
-            if (!Constants.verifyAvailableNetwork(requireContext())){
+            if (!Constants.verifyAvailableNetwork(requireContext())) {
                 CookieBar.build(requireActivity())
                     .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
@@ -57,9 +65,9 @@ class BookMarkFragment : Fragment() {
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
-            }else{
-                viewModel.refreshBookMaredNews()
-                viewModel.getBookMaredNews().observe(viewLifecycleOwner){
+            } else {
+                viewModel.refreshBookMarkedNews()
+                viewModel.getBookMaredNews().observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
@@ -74,8 +82,9 @@ class BookMarkFragment : Fragment() {
 
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar_menu,menu)
+        inflater.inflate(R.menu.toolbar_menu, menu)
         val search = menu?.findItem(R.id.action_search)
         val searchView = search?.actionView as SearchView
         searchView.queryHint = "Search"
@@ -84,6 +93,7 @@ class BookMarkFragment : Fragment() {
                 searchAction(query.toString())
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAction(newText.toString())
                 return true
@@ -91,9 +101,11 @@ class BookMarkFragment : Fragment() {
         })
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.action_search -> Toast.makeText(requireContext(),"Search", Toast.LENGTH_SHORT).show()
+        when (item.itemId) {
+            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
+                .show()
             R.id.action_voice -> displaySpeechRecognizer()
         }
         return super.onOptionsItemSelected(item)
@@ -124,13 +136,13 @@ class BookMarkFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun searchAction(query:String){
+    fun searchAction(query: String) {
         var newsList: List<News>
         viewModel.getBookMaredNews().observe(viewLifecycleOwner, Observer {
             newsList = it
             val collectionSearch: List<News> = newsList.filter {
-            it.title!!.uppercase().contains(query.uppercase())
-        }.toList()
+                it.title!!.uppercase().contains(query.uppercase())
+            }.toList()
             adapter.submitList(collectionSearch)
         })
     }

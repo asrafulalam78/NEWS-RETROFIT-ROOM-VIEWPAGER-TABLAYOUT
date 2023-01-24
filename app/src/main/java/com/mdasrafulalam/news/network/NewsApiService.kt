@@ -21,11 +21,14 @@ private val retrofit = Retrofit.Builder()
 
 interface NewsApiService {
     @GET("top-headlines")
-    suspend fun getTopNews(@Query("country") q: String, @Query("apiKey") apiKey: String) : NewsModel
+    suspend fun getTopNews(@Query("country") q: String, @Query("apiKey") apiKey: String): NewsModel
+
     @GET("top-headlines")
-    suspend fun getCategoryNews(@Query("country") q: String,
-                           @Query("category") category: String,
-                           @Query("apiKey") apiKey: String) : NewsModel
+    suspend fun getCategoryNews(
+        @Query("country") q: String,
+        @Query("category") category: String,
+        @Query("apiKey") apiKey: String
+    ): NewsModel
 }
 
 object NewsApi {

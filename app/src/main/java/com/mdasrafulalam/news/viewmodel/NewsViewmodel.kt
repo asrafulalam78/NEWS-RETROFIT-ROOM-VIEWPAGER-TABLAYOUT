@@ -1,7 +1,6 @@
 package com.mdasrafulal
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -13,73 +12,67 @@ import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.network.NewsApi
 import com.mdasrafulalam.news.repository.NewsRepository
 import com.mdasrafulalam.news.utils.Constants
-import com.mdasrafulalam.news.workers.WorkManagerUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 enum class NewsApiStatus { LOADING, ERROR, DONE }
-class NewsViewmodel(application: Application) : AndroidViewModel(application){
+class NewsViewmodel(application: Application) : AndroidViewModel(application) {
     private var repository: NewsRepository
     private val _status = MutableLiveData<NewsApiStatus>()
     private val _topNewsList = MutableLiveData<List<Article>>()
-    val topNewsList: LiveData<List<Article>> = _topNewsList
+    private val topNewsList: LiveData<List<Article>> = _topNewsList
     private var _businessNewsList = MutableLiveData<List<Article>>()
-    val businessNewsList: LiveData<List<Article>> = _businessNewsList
+    private val businessNewsList: LiveData<List<Article>> = _businessNewsList
     private val _entertainNewsList = MutableLiveData<List<Article>>()
-    val entertainNewsList: LiveData<List<Article>> = _entertainNewsList
+    private val entertainNewsList: LiveData<List<Article>> = _entertainNewsList
     private val _healthNewsList = MutableLiveData<List<Article>>()
-    val healthNewsList: LiveData<List<Article>> = _healthNewsList
+    private val healthNewsList: LiveData<List<Article>> = _healthNewsList
     private val _scienceNewsList = MutableLiveData<List<Article>>()
-    val scienceNewsList: LiveData<List<Article>> = _scienceNewsList
+    private val scienceNewsList: LiveData<List<Article>> = _scienceNewsList
     private val _sportsNewsList = MutableLiveData<List<Article>>()
-    val sportsNewsList: LiveData<List<Article>> = _sportsNewsList
+    private val sportsNewsList: LiveData<List<Article>> = _sportsNewsList
     private val _technologyNewsList = MutableLiveData<List<Article>>()
-    val technologyNewsList: LiveData<List<Article>> = _technologyNewsList
+    private val technologyNewsList: LiveData<List<Article>> = _technologyNewsList
 
     init {
         val dao = NewsDB.getDB(application).getNewsDao()
         repository = NewsRepository(dao)
         refreshData()
     }
-//    val data = Pager(
-//        PagingConfig(
-//            pageSize = 20,
-//            enablePlaceholders = false,
-//            initialLoadSize = 20
-//        ),
-//    ) {
-//        val dao = NewsDB.getDB(application).getNewsDao()
-//        MainPagingSource(dao)
-//    }.flow.cachedIn(viewModelScope)
 
-    fun refreshAllNews(){
+    fun refreshAllNews() {
         getTopNews()
     }
-    fun refreshBusinessnews(){
+
+    fun refreshBusinessNews() {
         getBusinessNews()
     }
-    fun refreshEntertainmentNews(){
+
+    fun refreshEntertainmentNews() {
         getEntertainmentNews()
     }
 
-    fun refreshHealthNews(){
+    fun refreshHealthNews() {
         getHealthNews()
     }
-    fun refreshScienceNews(){
+
+    fun refreshScienceNews() {
         getScienceNews()
     }
-    fun refreshSportsNews(){
+
+    fun refreshSportsNews() {
         getSportsNews()
     }
 
-    fun refreshTechnologyNews(){
+    fun refreshTechnologyNews() {
         getTechnologyNews()
     }
-    fun refreshBookMaredNews(){
+
+    fun refreshBookMarkedNews() {
         getBookMaredNews()
     }
 
-    fun refreshData(){
+    fun refreshData() {
         getTopNews()
         getBusinessNews()
         getEntertainmentNews()
@@ -89,31 +82,38 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         getTechnologyNews()
         getBookMaredNews()
     }
-    fun addNews(news: News) {
+
+    private fun addNews(news: News) {
         viewModelScope.launch {
             repository.addNews(news)
         }
     }
 
-    fun updateBookMark(news: News){
+    fun updateBookMark(news: News) {
         viewModelScope.launch {
             repository.updateNews(news)
         }
     }
-    fun loadDataIntoDB(category: String, newsList: MutableLiveData<List<Article>>, country:String){
-        for (i in newsList.value!!){
+
+    fun loadDataIntoDB(
+        category: String,
+        newsList: MutableLiveData<List<Article>>,
+        country: String
+    ) {
+        for (i in newsList.value!!) {
             var author = i.author
             val content = i.content
             val description = i.description
             val publishedAt = i.publishedAt
-            val title  = i.title
+            val title = i.title
             val url = i.url
             var urlToImage = i.urlToImage
-            if (author==null){
+            if (author == null) {
                 author = "Not Found"
             }
-            if (urlToImage==null){
-                urlToImage = "https://storage.googleapis.com/afs-prod/media/4acdae97a52b43e4a9aaffb4f78f6eae/3000.webp"
+            if (urlToImage == null) {
+                urlToImage =
+                    "https://storage.googleapis.com/afs-prod/media/4acdae97a52b43e4a9aaffb4f78f6eae/3000.webp"
             }
 
             val news = News(
@@ -125,20 +125,29 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
                 url = url,
                 urlToImage = urlToImage,
                 category = category,
-                country = country)
+                country = country
+            )
             addNews(news)
         }
     }
+
     private fun getTopNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _topNewsList.value = NewsApi.retrofitService.getTopNews(Constants.COUNTRY.value.toString(), Constants.API_KEY).articles
+                _topNewsList.value = NewsApi.retrofitService.getTopNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
                 Log.d("list", "list: ${_topNewsList.value}")
-                if (topNewsList.value!!.size > 0){
+                if (topNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_TOP_NEWS,_topNewsList, Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_TOP_NEWS,
+                            _topNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -147,15 +156,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getBusinessNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _businessNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_BUSINESS, Constants.API_KEY).articles
+                _businessNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_BUSINESS,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (businessNewsList.value!!.size > 0){
+                if (businessNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_BUSINESS,_businessNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_BUSINESS,
+                            _businessNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -164,15 +182,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getEntertainmentNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _entertainNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_ENTERTAINMENT, Constants.API_KEY).articles
+                _entertainNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_ENTERTAINMENT,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (entertainNewsList.value!!.size > 0){
+                if (entertainNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_ENTERTAINMENT,_entertainNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_ENTERTAINMENT,
+                            _entertainNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -181,15 +208,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getHealthNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _healthNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_HEALTH, Constants.API_KEY).articles
+                _healthNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_HEALTH,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (healthNewsList.value!!.size > 0){
+                if (healthNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_HEALTH,_healthNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_HEALTH,
+                            _healthNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -198,15 +234,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getScienceNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _scienceNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_SCIENCE, Constants.API_KEY).articles
+                _scienceNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_SCIENCE,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (scienceNewsList.value!!.size > 0){
+                if (scienceNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_SCIENCE,_scienceNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_SCIENCE,
+                            _scienceNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -215,15 +260,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getSportsNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _sportsNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_SPORTS, Constants.API_KEY).articles
+                _sportsNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_SPORTS,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (sportsNewsList.value!!.size > 0){
+                if (sportsNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_SPORTS,_sportsNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_SPORTS,
+                            _sportsNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -232,15 +286,24 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
             }
         }
     }
+
     private fun getTechnologyNews() {
         viewModelScope.launch {
             _status.value = NewsApiStatus.LOADING
             try {
-                _technologyNewsList.value = NewsApi.retrofitService.getCategoryNews(Constants.COUNTRY.value.toString(), Constants.CATEGORY_TECHNOLOGY, Constants.API_KEY).articles
+                _technologyNewsList.value = NewsApi.retrofitService.getCategoryNews(
+                    Constants.COUNTRY.value.toString(),
+                    Constants.CATEGORY_TECHNOLOGY,
+                    Constants.API_KEY
+                ).articles
                 _status.value = NewsApiStatus.DONE
-                if (technologyNewsList.value!!.size > 0){
+                if (technologyNewsList.value!!.size > 0) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        loadDataIntoDB(Constants.CATEGORY_TECHNOLOGY,_technologyNewsList,Constants.COUNTRY.value.toString())
+                        loadDataIntoDB(
+                            Constants.CATEGORY_TECHNOLOGY,
+                            _technologyNewsList,
+                            Constants.COUNTRY.value.toString()
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -250,13 +313,26 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application){
         }
     }
 
-    fun getBookMaredNews() : LiveData<List<News>> = repository.getBookMaredNews()
-    fun getAllNews(country: String) : LiveData<List<News>> = repository.getAllNews(Constants.CATEGORY_TOP_NEWS,country)
+    fun getBookMaredNews(): LiveData<List<News>> = repository.getBookMarkedNews()
+    fun getAllNews(country: String): LiveData<List<News>> =
+        repository.getAllNews(Constants.CATEGORY_TOP_NEWS, country)
+
     fun deleteNewsByCategory(category: String) = repository.deleteNewsByCategory(category)
-    fun getBusinessNews(category: String, country: String) : LiveData<List<News>> = repository.getNewsByCategory(category, country)
-    fun getEntertainmentNews(category: String, country: String) : LiveData<List<News>> = repository.getNewsByCategory(category,country)
-    fun getHealthNews(category: String, country: String) : LiveData<List<News>> = repository.getNewsByCategory(category,country)
-    fun getScienceNews(category: String,country: String) : LiveData<List<News>> = repository.getNewsByCategory(category,country)
-    fun getSportsNews(category: String,country: String) : LiveData<List<News>> = repository.getNewsByCategory(category,country)
-    fun getTechnologyNews(category: String,country: String) : LiveData<List<News>> = repository.getNewsByCategory(category,country)
+    fun getBusinessNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
+
+    fun getEntertainmentNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
+
+    fun getHealthNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
+
+    fun getScienceNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
+
+    fun getSportsNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
+
+    fun getTechnologyNews(category: String, country: String): LiveData<List<News>> =
+        repository.getNewsByCategory(category, country)
 }

@@ -12,35 +12,30 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mdasrafulal.NewsViewmodel
-import com.mdasrafulalam.news.adapter.BookMarkAdapter
-import com.mdasrafulalam.news.adapter.MainAdapter
-import com.mdasrafulalam.news.adapter.MainLoadStateAdapter
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
 import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.aviran.cookiebar2.CookieBar
 
 class AllNewsFragment : Fragment() {
-    private lateinit var preference:DataPreference
+    private lateinit var preference: DataPreference
     private lateinit var binding: FragmentAllNewsBinding
-    private  lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var adapter: NewsRecyclerViewAdapter
     private val viewModel: NewsViewmodel by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentAllNewsBinding.inflate(layoutInflater, container, false)
@@ -49,50 +44,40 @@ class AllNewsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner, ::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.newsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
+
         binding.newsRV.adapter = adapter
         preference = DataPreference(requireContext())
         preference.selectedCountryFlow.asLiveData().observe(requireActivity()) {
             Constants.COUNTRY.value = it
         }
-//        binding.newsRV.adapter = adapter.withLoadStateFooter(
-//            MainLoadStateAdapter()
-//        )
-//
-//        lifecycleScope.launch {
-//            viewModel.data.collectLatest {
-//                adapter.submitData(it)
-//                Log.d("listdata", "list: $it")
-//            }
-//        }
-
-        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner){
+        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-        swipeRefreshLayout.setOnRefreshListener{
+        swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
-            if (!Constants.verifyAvailableNetwork(requireContext())){
-                CookieBar.build(requireActivity())
-                    .setTitle(getString(R.string.network_conncetion))
-                    .setBackgroundColor(R.color.swipe_color_4)
-                    .setTitleColor(R.color.white)
-                    .setSwipeToDismiss(true)
-                    .setMessage("No Active Internet!")
-                    .setDuration(5000)
+            if (!Constants.verifyAvailableNetwork(requireContext())) {
+                CookieBar.build(requireActivity()).setTitle(getString(R.string.network_conncetion))
+                    .setBackgroundColor(R.color.swipe_color_4).setTitleColor(R.color.white)
+                    .setSwipeToDismiss(true).setMessage("No Active Internet!").setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
-            }else{
+            } else {
                 viewModel.refreshAllNews()
-                viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner){
-                    adapter.submitList(it)
-                }
-                CookieBar.build(requireActivity())
-                    .setMessage("News Updated!")
-                    .setDuration(5000)
-                    .setBackgroundColor(R.color.color_tab_text)
-                    .setIcon(R.drawable.success)
+                viewModel.getAllNews(Constants.COUNTRY.value.toString())
+                    .observe(viewLifecycleOwner) {
+                        adapter.submitList(it)
+                    }
+                CookieBar.build(requireActivity()).setMessage("News Updated!").setDuration(5000)
+                    .setBackgroundColor(R.color.color_tab_text).setIcon(R.drawable.success)
                     .setMessageColor(R.color.white)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
@@ -105,8 +90,9 @@ class AllNewsFragment : Fragment() {
     fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.toolbar_menu,menu)
+        inflater.inflate(R.menu.toolbar_menu, menu)
         val search = menu?.findItem(R.id.action_search)
         val searchView = search?.actionView as SearchView
         searchView.queryHint = "Search"
@@ -115,6 +101,7 @@ class AllNewsFragment : Fragment() {
                 searchAction(query!!)
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAction(newText!!)
                 return true
@@ -122,9 +109,11 @@ class AllNewsFragment : Fragment() {
         })
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.action_search -> Toast.makeText(requireContext(),"Search", Toast.LENGTH_SHORT).show()
+        when (item.itemId) {
+            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
+                .show()
             R.id.action_voice -> displaySpeechRecognizerForDesc()
         }
         return super.onOptionsItemSelected(item)
@@ -155,15 +144,16 @@ class AllNewsFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun searchAction(query:String){
+    fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
-            newsList = it
-            val collectionSearch: List<News> = newsList.filter {
-                it.title!!.uppercase().contains(query.toString().uppercase())
-            }.toList()
-            adapter.submitList(collectionSearch)
-        })
+        viewModel.getAllNews(Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner, Observer {
+                newsList = it
+                val collectionSearch: List<News> = newsList.filter {
+                    it.title!!.uppercase().contains(query.toString().uppercase())
+                }.toList()
+                adapter.submitList(collectionSearch)
+            })
 
     }
 

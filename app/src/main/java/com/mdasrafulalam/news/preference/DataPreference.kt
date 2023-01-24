@@ -7,49 +7,56 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
-import java.io.StringReader
 import kotlinx.coroutines.flow.Flow
 
 private const val prefName = "country_preference"
-private val Context.dataStore : DataStore<Preferences> by preferencesDataStore(
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = prefName
 )
+
 class DataPreference(context: Context) {
     private val selectedCountry = stringPreferencesKey("selectedCountry")
     private val selectedPosition = longPreferencesKey("selectedPosition")
     private val darkMode = booleanPreferencesKey("darkMode")
 
-    val selectedCountryFlow: Flow<String> = context.dataStore.data .catch {
+    val selectedCountryFlow: Flow<String> = context.dataStore.data.catch {
         if (it is IOException) {
             emit(emptyPreferences())
-        }else {throw it}
-    }.map {
-            it[selectedCountry] ?: "no country found"
+        } else {
+            throw it
         }
+    }.map {
+        it[selectedCountry] ?: "no country found"
+    }
 
-    val selectedPositionFlow: Flow<Long> = context.dataStore.data .catch {
+    val selectedPositionFlow: Flow<Long> = context.dataStore.data.catch {
         if (it is IOException) {
             emit(emptyPreferences())
-        }else {throw it}
+        } else {
+            throw it
+        }
     }.map {
         it[selectedPosition] ?: 0
     }
 
-    val darkModeFlow: Flow<Boolean> = context.dataStore.data .catch {
+    val darkModeFlow: Flow<Boolean> = context.dataStore.data.catch {
         if (it is IOException) {
             emit(emptyPreferences())
-        }else {throw it}
+        } else {
+            throw it
+        }
     }.map {
         it[darkMode] ?: false
     }
 
-    suspend fun setCountry(country:String, position:Long, context: Context){
+    suspend fun setCountry(country: String, position: Long, context: Context) {
         context.dataStore.edit {
             it[selectedCountry] = country
             it[selectedPosition] = position
         }
     }
-    suspend fun setDarkModeValue(darkmode:Boolean, context: Context){
+
+    suspend fun setDarkModeValue(darkmode: Boolean, context: Context) {
         context.dataStore.edit {
             it[darkMode] = darkmode
         }

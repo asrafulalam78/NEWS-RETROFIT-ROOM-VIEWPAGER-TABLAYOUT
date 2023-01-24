@@ -8,25 +8,27 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mdasrafulalam.news.BookMarkFragmentDirections
-import com.mdasrafulalam.news.HomeFragmentDirections
 import com.mdasrafulalam.news.databinding.NewsListItemBinding
 import com.mdasrafulalam.news.model.News
 
-class BookMarkAdapter(val addBookmarkCallback: (News) -> Unit) :  ListAdapter<News, BookMarkAdapter.NewsViewHolder>(NewsDiffCallback()) {
-    class NewsViewHolder( val binding: NewsListItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(newsModel: News){
+class BookMarkAdapter(val addBookmarkCallback: (News) -> Unit) :
+    ListAdapter<News, BookMarkAdapter.NewsViewHolder>(NewsDiffCallback()) {
+    class NewsViewHolder(val binding: NewsListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(newsModel: News) {
             binding.newsItem = newsModel
             binding.itemCardView.setOnClickListener {
-                val action = BookMarkFragmentDirections.actionBookMarkFragmentToNewsDetailsFragment(newsItem = newsModel)
+                val action =
+                    BookMarkFragmentDirections.actionBookMarkFragmentToNewsDetailsFragment(newsItem = newsModel)
                 it.findNavController().navigate(action)
             }
         }
     }
 
-    class NewsDiffCallback : DiffUtil.ItemCallback<News>(){
+    class NewsDiffCallback : DiffUtil.ItemCallback<News>() {
         override fun areItemsTheSame(oldItem: News, newItem: News): Boolean {
             return oldItem.url == newItem.url
         }
+
         @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(oldItem: News, newItem: News): Boolean {
             return oldItem == newItem
@@ -35,7 +37,8 @@ class BookMarkAdapter(val addBookmarkCallback: (News) -> Unit) :  ListAdapter<Ne
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        val binding = NewsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            NewsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NewsViewHolder(binding)
     }
 

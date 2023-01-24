@@ -5,8 +5,9 @@
     <color name="purple_700">#4CAF50</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="grey">#535251</color>
+    <color name="black">#FBF7F7</color>
+    <color name="grey">#FAF9F9</color>
+    <color name="tab_selected_text">#ADDFAF</color>
 
     <color name="colorPrimary">#005689</color>
     <color name="colorPrimaryDark">#005689</color>
@@ -21,7 +22,7 @@
     <color name="color_author">#4CAF50</color>
 
     <!-- Colors for settings of color theme-->
-    <color name="white">#ffffff</color>
+    <color name="white">#AFAFAF</color>
     <color name="violet">#9c27b0</color>
     <color name="light_green">#8bc34a</color>
 
@@ -30,12 +31,12 @@
     <color name="gradient_end_color">#885d5d5e</color>
     <color name="gradient_start_color">#880f0f10</color>
 
-    <color name="color_trail_text">#102027</color>
+    <color name="color_trail_text">#CADFE8</color>
     <color name="color_date_text">#a4a4a4</color>
 
     <color name="color_app_bar_text">#005689</color>
     <color name="color_tab_text">#a7c0cd</color>
 
     <color name="nav_bar_start">#7db1ec</color>
-    <color name="nav_bar_end">#002e5b</color>
+    <color name="nav_bar_end">#91B9E1</color>
 </resources>

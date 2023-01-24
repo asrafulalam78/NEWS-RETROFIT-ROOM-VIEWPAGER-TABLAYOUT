@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
@@ -39,12 +40,19 @@ class SportsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.sportsNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.sportsNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.sportsNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.sportsNewsRV.adapter = adapter
-        viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.getSportsNews(Constants.CATEGORY_SPORTS, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
         binding.sportsSwipRefreshLayout.setOnRefreshListener {
             binding.sportsSwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
@@ -60,7 +68,10 @@ class SportsFragment : Fragment() {
                     .show()
             } else {
                 viewModel.refreshSportsNews()
-                viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+                viewModel.getSportsNews(
+                    Constants.CATEGORY_SPORTS,
+                    Constants.COUNTRY.value.toString()
+                ).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
@@ -135,12 +146,13 @@ class SportsFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getSportsNews(Constants.CATEGORY_SPORTS,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
-            newsList = it
-            val collectionSearch: List<News> = newsList.filter {
-                it.title!!.uppercase().contains(query.toString().uppercase())
-            }.toList()
-            adapter.submitList(collectionSearch)
-        })
+        viewModel.getSportsNews(Constants.CATEGORY_SPORTS, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner, Observer {
+                newsList = it
+                val collectionSearch: List<News> = newsList.filter {
+                    it.title!!.uppercase().contains(query.toString().uppercase())
+                }.toList()
+                adapter.submitList(collectionSearch)
+            })
     }
 }

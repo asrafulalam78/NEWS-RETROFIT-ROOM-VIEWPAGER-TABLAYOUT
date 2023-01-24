@@ -1,9 +1,9 @@
 package com.mdasrafulalam.news.workers
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -12,6 +12,8 @@ import com.mdasrafulalam.news.utils.Constants
 import java.util.concurrent.TimeUnit
 
 private const val TAG = "WorkerUtils"
+
+@SuppressLint("MissingPermission")
 fun makeStatusNotification(message: String, context: Context) {
     // Make a channel if necessary
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,12 +43,19 @@ fun makeStatusNotification(message: String, context: Context) {
     // Show the notification
     NotificationManagerCompat.from(context).notify(Constants.NOTIFICATION_ID, builder.build())
 }
+
 class WorkManagerUtils {
-    fun syncData(context:Context){
+    fun syncData(context: Context) {
         val workManager = WorkManager.getInstance(context)
-        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val periodicWorkRequest = PeriodicWorkRequest.Builder(SyncWorker::class.java,15, TimeUnit.MINUTES).setConstraints(constraints).addTag("Sync_Data").build()
-        val req = PeriodicWorkRequestBuilder<SyncWorker>(20, TimeUnit.MINUTES).setConstraints(constraints).build()
-        workManager.enqueueUniquePeriodicWork("Sync_Data",ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest)
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiredNetworkType(NetworkType.UNMETERED).setRequiresStorageNotLow(true).build()
+        val periodicWorkRequest =
+            PeriodicWorkRequest.Builder(SyncWorker::class.java, 300, TimeUnit.MINUTES, 10, TimeUnit.MINUTES)
+                .setConstraints(constraints).addTag("Sync_Data").build()
+        workManager.enqueueUniquePeriodicWork(
+            "Sync_Data",
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
     }
 }

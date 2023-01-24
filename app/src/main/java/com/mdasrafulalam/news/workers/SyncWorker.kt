@@ -16,32 +16,32 @@ import androidx.work.WorkerParameters
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.R
 import com.mdasrafulalam.news.utils.Constants
+
 private const val TAG = "NewsWorker"
-class SyncWorker(context: Context, params:WorkerParameters): Worker(context, params), ViewModelStoreOwner {
+
+class SyncWorker(context: Context, params: WorkerParameters) : Worker(context, params),
+    ViewModelStoreOwner {
     private lateinit var viewModel: NewsViewmodel
-    private val appViewModelStore: ViewModelStore by lazy {         ViewModelStore()     }
+    private val appViewModelStore: ViewModelStore by lazy { ViewModelStore() }
+
     @SuppressLint("WrongThread")
     override fun doWork(): Result {
         return try {
-//            viewModel =  ViewModelProvider(this)[NewsViewmodel::class.java]
-//            viewModel.refreshData()
-//        sendNotification("There are some breaking news!")
+            viewModel =  ViewModelProvider(this)[NewsViewmodel::class.java]
+            viewModel.refreshData()
             Log.d(TAG, "doWork: updated")
-            makeStatusNotification("There may be some updated news! Please check.", applicationContext)
+            makeStatusNotification(
+                "There may be some updated news! Please check.",
+                applicationContext
+            )
             return Result.success()
-        }catch (throwable: Throwable){
+        } catch (throwable: Throwable) {
             Log.e(TAG, "Error fetching news")
             throwable.printStackTrace()
             Result.failure()
         }
 
     }
-
-    /**
-     * Returns owned [ViewModelStore]
-     *
-     * @return a `ViewModelStore`
-     */
     override fun getViewModelStore(): ViewModelStore {
         return appViewModelStore
     }

@@ -8,20 +8,21 @@ import com.mdasrafulalam.news.dao.NewsDao
 import com.mdasrafulalam.news.model.News
 
 @Database(entities = [News::class], version = 1)
-abstract class NewsDB: RoomDatabase() {
-    abstract fun getNewsDao() : NewsDao
-        companion object{
-            private var db: NewsDB? = null
-            fun getDB(context: Context) : NewsDB {
-                if (db == null) {
-                    db = Room.databaseBuilder(
-                        context.applicationContext,
-                        NewsDB::class.java,
-                        "news_db"
-                    ).build()
-                    return db!!
-                }
+abstract class NewsDB : RoomDatabase() {
+    abstract fun getNewsDao(): NewsDao
+
+    companion object {
+        private var db: NewsDB? = null
+        fun getDB(context: Context): NewsDB {
+            if (db == null) {
+                db = Room.databaseBuilder(
+                    context.applicationContext,
+                    NewsDB::class.java,
+                    "news_db"
+                ).build()
                 return db!!
             }
+            return db!!
         }
+    }
 }

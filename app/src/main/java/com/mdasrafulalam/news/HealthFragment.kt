@@ -11,10 +11,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentHealthBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
@@ -35,12 +35,19 @@ class HealthFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.healthNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.healthNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.healthNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.healthNewsRV.adapter = adapter
-        viewModel.getHealthNews(Constants.CATEGORY_HEALTH,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        viewModel.getHealthNews(Constants.CATEGORY_HEALTH, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner) {
+                adapter.submitList(it)
+            }
         binding.healthSwipRefreshLayout.setOnRefreshListener {
             binding.healthSwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
@@ -56,7 +63,10 @@ class HealthFragment : Fragment() {
                     .show()
             } else {
                 viewModel.refreshHealthNews()
-                viewModel.getHealthNews(Constants.CATEGORY_HEALTH,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+                viewModel.getHealthNews(
+                    Constants.CATEGORY_HEALTH,
+                    Constants.COUNTRY.value.toString()
+                ).observe(viewLifecycleOwner) {
                     adapter.submitList(it)
                 }
                 CookieBar.build(requireActivity())
@@ -131,13 +141,14 @@ class HealthFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getHealthNews(Constants.CATEGORY_HEALTH,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner, Observer {
-            newsList = it
-            ;
-            val collectionSearch: List<News> = newsList.filter {
-                it.title!!.uppercase().contains(query.toString().uppercase())
-            }.toList()
-            adapter.submitList(collectionSearch)
-        })
+        viewModel.getHealthNews(Constants.CATEGORY_HEALTH, Constants.COUNTRY.value.toString())
+            .observe(viewLifecycleOwner, Observer {
+                newsList = it
+                ;
+                val collectionSearch: List<News> = newsList.filter {
+                    it.title!!.uppercase().contains(query.toString().uppercase())
+                }.toList()
+                adapter.submitList(collectionSearch)
+            })
     }
 }

@@ -29,7 +29,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            card_view:cardCornerRadius="10dp">
+            app:cardCornerRadius="10dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                         android:layout_weight="8"
                         android:ellipsize="end"
                         android:marqueeRepeatLimit="marquee_forever"
-                        android:maxLines="2"
+                        android:maxLines="3"
                         android:text="@{newsItem.title}"
                         android:textColor="@color/black"
                         android:textSize="20sp"
@@ -108,7 +108,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text='@{String.format("Author : "+newsItem.author)}'
-                    android:textColor="#1B5E20"
+                    android:textColor="@color/black"
                     android:textSize="18sp"
                     tools:text="Author" />
 

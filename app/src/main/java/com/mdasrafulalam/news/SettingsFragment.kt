@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.datastore.preferences.core.Preferences
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
@@ -19,13 +18,12 @@ import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.FragmentSettingsBinding
 import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.aviran.cookiebar2.CookieBar
 
 class SettingsFragment : Fragment() {
     private lateinit var _binding: FragmentSettingsBinding
     private val viewModel: NewsViewmodel by activityViewModels()
+    private var isLinear = true
     private lateinit var preferences: DataPreference
     private val binding get() = _binding
     override fun onCreateView(
@@ -37,24 +35,40 @@ class SettingsFragment : Fragment() {
         return binding.root
     }
 
+    private fun chooseImage(isLinear: Boolean) {
+        if (isLinear) {
+            binding.preferedLayout.setImageResource(com.mdasrafulalam.news.R.drawable.ic_linear_layout)
+        } else {
+            binding.preferedLayout.setImageResource(com.mdasrafulalam.news.R.drawable.ic_grid_layout)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        preferences = DataPreference(requireContext())
-
-        Constants.DARKMODE.observe(viewLifecycleOwner, Observer {
-                   binding.themeSwitch.isChecked = it
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            isLinear = it
+            chooseImage(isLinear)
         })
-
-        val countryAdapter = ArrayAdapter<String>(
+        preferences = DataPreference(requireContext())
+        Constants.DARKMODE.observe(viewLifecycleOwner, Observer {
+            binding.themeSwitch.isChecked = it
+        })
+        binding.preferedLayout.setOnClickListener {
+            isLinear = !isLinear
+            Constants.ISLINEARLYOUT.value = isLinear
+            chooseImage(isLinear)
+        }
+        val countryAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.simple_spinner_dropdown_item,
             Constants.countryList
         )
-        binding.themeSwitch.setOnCheckedChangeListener{_,isChecked->
+        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 binding.settingsFragmentLL.setBackgroundColor(resources.getColor(R.color.darker_gray))
                 binding.themeSwitch.setBackgroundColor(resources.getColor(com.mdasrafulalam.news.R.color.nav_bar_start))
-                binding.themeSwitch.text = getString(com.mdasrafulalam.news.R.string.disable_dark_mode)
+                binding.themeSwitch.text =
+                    getString(com.mdasrafulalam.news.R.string.disable_dark_mode)
 //                lifecycle.coroutineScope.launch {
 //                    preferences.setDarkModeValue(true, requireContext())
 //                }
@@ -62,7 +76,8 @@ class SettingsFragment : Fragment() {
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 binding.settingsFragmentLL.setBackgroundColor(resources.getColor(R.color.white))
-                binding.themeSwitch.text = getString(com.mdasrafulalam.news.R.string.enable_dark_mode)
+                binding.themeSwitch.text =
+                    getString(com.mdasrafulalam.news.R.string.enable_dark_mode)
 //                lifecycle.coroutineScope.launch {
 //                    preferences.setDarkModeValue(false, requireContext())
 //                }
@@ -86,7 +101,11 @@ class SettingsFragment : Fragment() {
                 ) {
                     Constants.COUNTRY.value = Constants.countryCode[position]
                     lifecycle.coroutineScope.launch {
-                        preferences.setCountry(Constants.COUNTRY.value.toString(), position.toLong(), requireContext())
+                        preferences.setCountry(
+                            Constants.COUNTRY.value.toString(),
+                            position.toLong(),
+                            requireContext()
+                        )
                     }
                     Log.d("country", "Selected Country: ${Constants.COUNTRY.value.toString()}")
                     viewModel.refreshData()

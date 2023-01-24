@@ -11,12 +11,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentBusinessBinding
 import com.mdasrafulalam.news.databinding.FragmentEntertainmentBinding
-import com.mdasrafulalam.news.model.Article
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
@@ -41,10 +40,19 @@ class EntertainmentFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(::updateBookmark)
-        binding.entertainmentNewsRV.layoutManager = LinearLayoutManager(requireContext())
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.entertainmentNewsRV.layoutManager = LinearLayoutManager(requireContext())
+            } else {
+                binding.entertainmentNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+            }
+        })
         binding.entertainmentNewsRV.adapter = adapter
-        viewModel.getBusinessNews(Constants.CATEGORY_ENTERTAINMENT,Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+        viewModel.getBusinessNews(
+            Constants.CATEGORY_ENTERTAINMENT,
+            Constants.COUNTRY.value.toString()
+        ).observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
         binding.entertainmentFragmentSwipRefreshLayout.setOnRefreshListener {
@@ -62,7 +70,10 @@ class EntertainmentFragment : Fragment() {
                     .show()
             } else {
                 viewModel.refreshEntertainmentNews()
-                viewModel.getEntertainmentNews(Constants.CATEGORY_ENTERTAINMENT,Constants.COUNTRY.value.toString())
+                viewModel.getEntertainmentNews(
+                    Constants.CATEGORY_ENTERTAINMENT,
+                    Constants.COUNTRY.value.toString()
+                )
                     .observe(viewLifecycleOwner) {
                         adapter.submitList(it)
                     }
@@ -138,7 +149,10 @@ class EntertainmentFragment : Fragment() {
 
     fun searchAction(query: String) {
         var newsList: List<News>
-        viewModel.getEntertainmentNews(Constants.CATEGORY_ENTERTAINMENT,Constants.COUNTRY.value.toString())
+        viewModel.getEntertainmentNews(
+            Constants.CATEGORY_ENTERTAINMENT,
+            Constants.COUNTRY.value.toString()
+        )
             .observe(viewLifecycleOwner, Observer {
                 newsList = it
                 ;
