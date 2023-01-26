@@ -16,7 +16,6 @@ class News(
     @PrimaryKey
     val url: String,
     @ColumnInfo(name = "image_url")
-    @Nullable
     val urlToImage: String?,
     val category: String?,
     @ColumnInfo(name = "is_bookmared")

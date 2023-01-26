@@ -1,4 +1,4 @@
-package com.mdasrafulal
+package com.mdasrafulalam.news.viewmodel
 
 import android.app.Application
 import android.util.Log
@@ -125,7 +125,7 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application) {
                 url = url,
                 urlToImage = urlToImage,
                 category = category,
-                country = country
+                country = country,
             )
             addNews(news)
         }
@@ -140,8 +140,8 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application) {
                     Constants.API_KEY
                 ).articles
                 _status.value = NewsApiStatus.DONE
-                Log.d("list", "list: ${_topNewsList.value}")
-                if (topNewsList.value!!.size > 0) {
+                Log.d("list", "list: ${_topNewsList.value!!.size}")
+                if (topNewsList.value!!.isNotEmpty()) {
                     viewModelScope.launch(Dispatchers.IO) {
                         loadDataIntoDB(
                             Constants.CATEGORY_TOP_NEWS,
@@ -317,10 +317,10 @@ class NewsViewmodel(application: Application) : AndroidViewModel(application) {
     fun getAllNews(country: String): LiveData<List<News>> =
         repository.getAllNews(Constants.CATEGORY_TOP_NEWS, country)
 
+
     fun deleteNewsByCategory(category: String) = repository.deleteNewsByCategory(category)
     fun getBusinessNews(category: String, country: String): LiveData<List<News>> =
         repository.getNewsByCategory(category, country)
-
     fun getEntertainmentNews(category: String, country: String): LiveData<List<News>> =
         repository.getNewsByCategory(category, country)
 

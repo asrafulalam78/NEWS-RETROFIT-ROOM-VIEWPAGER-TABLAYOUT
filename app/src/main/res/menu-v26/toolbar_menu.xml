@@ -4,10 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_search"
         android:title="@string/search"
-        app:actionViewClass="android.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         android:icon="@drawable/search"
-        app:showAsAction="always"
-        tools:ignore="AlwaysShowAction" />
+        app:showAsAction="always|collapseActionView"/>
     <item android:id="@+id/action_voice"
         android:title="@string/voice_search"
         android:tooltipText="Tell me your query"

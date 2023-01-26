@@ -10,7 +10,7 @@
         android:id="@+id/sportsSwipRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".SportsFragment">
+        tools:context=".ui.SportsFragment">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sportsNewsRV"

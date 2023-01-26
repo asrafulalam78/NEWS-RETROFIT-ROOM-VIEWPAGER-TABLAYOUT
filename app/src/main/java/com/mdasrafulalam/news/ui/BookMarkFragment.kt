@@ -1,4 +1,4 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -6,25 +6,24 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.*
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mdasrafulal.NewsViewmodel
-import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentEntertainmentBinding
+import com.mdasrafulalam.news.viewmodel.NewsViewmodel
+import com.mdasrafulalam.news.R
+import com.mdasrafulalam.news.adapter.BookMarkAdapter
+import com.mdasrafulalam.news.databinding.FragmentBookMarkBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
 
-
-class EntertainmentFragment : Fragment() {
-    private lateinit var binding: FragmentEntertainmentBinding
+class BookMarkFragment : Fragment() {
+    private lateinit var binding: FragmentBookMarkBinding
     private val viewModel: NewsViewmodel by activityViewModels()
-    private lateinit var adapter: NewsRecyclerViewAdapter
+    private lateinit var adapter: BookMarkAdapter
+    private lateinit var list: List<News>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -33,30 +32,32 @@ class EntertainmentFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        binding = FragmentEntertainmentBinding.inflate(layoutInflater, container, false)
+        binding = FragmentBookMarkBinding.inflate(layoutInflater, container, false)
+        list = listOf()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
-        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+        adapter = BookMarkAdapter(::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner) {
             if (it) {
-                binding.entertainmentNewsRV.layoutManager = LinearLayoutManager(requireContext())
+                binding.bookmrkNewsRV.layoutManager = LinearLayoutManager(requireContext())
             } else {
-                binding.entertainmentNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.bookmrkNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
             }
-        })
-        binding.entertainmentNewsRV.adapter = adapter
-        viewModel.getBusinessNews(
-            Constants.CATEGORY_ENTERTAINMENT,
-            Constants.COUNTRY.value.toString()
-        ).observe(viewLifecycleOwner) {
+        }
+        binding.bookmrkNewsRV.adapter = adapter
+        viewModel.refreshBookMarkedNews()
+        viewModel.getBookMaredNews().observe(viewLifecycleOwner) {
+            list = it
+            Log.d("bookmark", "bookmar: ${it.size}")
             adapter.submitList(it)
         }
-        binding.entertainmentFragmentSwipRefreshLayout.setOnRefreshListener {
-            binding.entertainmentFragmentSwipRefreshLayout.isRefreshing = false
+
+        binding.boomarkRefreshLayout.setOnRefreshListener {
+            binding.boomarkRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
                 CookieBar.build(requireActivity())
                     .setTitle(getString(R.string.network_conncetion))
@@ -69,14 +70,11 @@ class EntertainmentFragment : Fragment() {
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
             } else {
-                viewModel.refreshEntertainmentNews()
-                viewModel.getEntertainmentNews(
-                    Constants.CATEGORY_ENTERTAINMENT,
-                    Constants.COUNTRY.value.toString()
-                )
-                    .observe(viewLifecycleOwner) {
-                        adapter.submitList(it)
-                    }
+                viewModel.refreshBookMarkedNews()
+                viewModel.getBookMaredNews().observe(viewLifecycleOwner) {
+                    adapter.submitList(it)
+                    list = it
+                }
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
@@ -90,39 +88,36 @@ class EntertainmentFragment : Fragment() {
         }
     }
 
-    fun updateBookmark(news: News) {
-        viewModel.updateBookMark(news)
-    }
-
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.toolbar_menu, menu)
-        val search = menu?.findItem(R.id.action_search)
-        val searchView = search?.actionView as SearchView
+        val search = menu.findItem(R.id.action_search)
+        val searchView = search?.actionView as androidx.appcompat.widget.SearchView
         searchView.queryHint = "Search"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                searchAction(query.toString())
+                searchAction(query!!)
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchAction(newText.toString())
+                searchAction(newText!!)
                 return true
             }
         })
-
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
                 .show()
-            R.id.action_voice -> displaySpeechRecognizerForDesc()
+            R.id.action_voice -> displaySpeechRecognizer()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun displaySpeechRecognizerForDesc() {
+    private fun displaySpeechRecognizer() {
         //Starts an activity that will prompt the user for speech and send it through a speech recognizer.
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -131,11 +126,12 @@ class EntertainmentFragment : Fragment() {
             )
         }
         // This starts the activity and populates the intent with the speech text.
-        startActivityForResult(intent, 3)
+        startActivityForResult(intent, 1)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 3 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
             val spokenText =
                 data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).let { results ->
                     results?.get(0) ?: return
@@ -148,20 +144,13 @@ class EntertainmentFragment : Fragment() {
     }
 
     fun searchAction(query: String) {
-        var newsList: List<News>
-        viewModel.getEntertainmentNews(
-            Constants.CATEGORY_ENTERTAINMENT,
-            Constants.COUNTRY.value.toString()
-        )
-            .observe(viewLifecycleOwner, Observer {
-                newsList = it
-                ;
-                val collectionSearch: List<News> = newsList.filter {
-                    it.title!!.uppercase().contains(query.toString().uppercase())
-                }.toList()
-                adapter.submitList(collectionSearch)
-            })
+        val collectionSearch: List<News> = list.filter {
+            it.title!!.uppercase().contains(query.uppercase())
+        }.toList()
+        adapter.submitList(collectionSearch)
     }
 
-
+    fun updateBookmark(news: News) {
+        viewModel.updateBookMark(news)
+    }
 }

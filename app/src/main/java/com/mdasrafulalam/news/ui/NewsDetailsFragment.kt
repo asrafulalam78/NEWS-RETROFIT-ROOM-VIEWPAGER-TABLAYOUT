@@ -1,4 +1,4 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,7 +15,7 @@ class NewsDetailsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentNewsDetailsBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -28,7 +28,7 @@ class NewsDetailsFragment : Fragment() {
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, newsItem.url);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, newsItem.url)
             startActivity(Intent.createChooser(shareIntent, "Share Via"))
         }
         binding.readMoreTV.setOnClickListener {

@@ -2,18 +2,15 @@ package com.mdasrafulalam.news.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mdasrafulalam.news.HomeFragmentDirections
 import com.mdasrafulalam.news.databinding.NewsListItemBinding
 import com.mdasrafulalam.news.model.News
-import com.mdasrafulalam.news.utils.Constants
+import com.mdasrafulalam.news.ui.HomeFragmentDirections
 
 class NewsRecyclerViewAdapter(
     val lifecycleOwner: LifecycleOwner,
@@ -56,11 +53,6 @@ class NewsRecyclerViewAdapter(
             newsModel.isBookmared = !newsModel.isBookmared
             holder.bind(newsModel)
             addBookmarkCallback(newsModel)
-        }
-        Constants.ISLINEARLYOUT.observe(lifecycleOwner) {
-            if (!it) {
-                holder.binding.moreCard.visibility = View.GONE
-            }
         }
 
     }

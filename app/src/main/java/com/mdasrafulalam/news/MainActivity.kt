@@ -16,7 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.viewmodel.NewsViewmodel
 import com.mdasrafulalam.news.databinding.ActivityMainBinding
 import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
@@ -48,13 +48,15 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         Constants.ISLINEARLYOUT.value = true
+        Constants.COUNTRY.value = "us"
         viewModel = ViewModelProvider(this)[NewsViewmodel::class.java]
         preference = DataPreference(applicationContext)
+        viewModel.refreshData()
         preference.selectedCountryFlow.asLiveData().observe(this) {
             Constants.COUNTRY.value = it
         }
         WorkManagerUtils().syncData(applicationContext)
-        Constants.COUNTRY.value = "us"
+
         checkPermission()
         if (!Constants.verifyAvailableNetwork(this)) {
             CookieBar.build(this)
@@ -94,6 +96,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
+
 
     private fun checkPermission() {
         if (ContextCompat.checkSelfPermission(

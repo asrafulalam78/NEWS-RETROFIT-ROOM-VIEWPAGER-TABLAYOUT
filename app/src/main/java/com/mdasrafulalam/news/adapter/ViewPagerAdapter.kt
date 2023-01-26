@@ -1,9 +1,11 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.mdasrafulalam.news.categoryArray
+import com.mdasrafulalam.news.ui.*
 import com.mdasrafulalam.news.utils.Constants
 
 

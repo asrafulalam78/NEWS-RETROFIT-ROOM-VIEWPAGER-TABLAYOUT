@@ -1,6 +1,7 @@
 package com.mdasrafulalam.news.network
 
 import com.mdasrafulalam.news.model.NewsModel
+import com.mdasrafulalam.news.utils.Constants
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -20,14 +21,14 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface NewsApiService {
-    @GET("top-headlines")
-    suspend fun getTopNews(@Query("country") q: String, @Query("apiKey") apiKey: String): NewsModel
+    @GET(Constants.END_POINT)
+    suspend fun getTopNews(@Query(Constants.PARAM_COUNTRY) q: String, @Query(Constants.PARAM_KEY) apiKey: String): NewsModel
 
-    @GET("top-headlines")
+    @GET(Constants.END_POINT)
     suspend fun getCategoryNews(
-        @Query("country") q: String,
-        @Query("category") category: String,
-        @Query("apiKey") apiKey: String
+        @Query(Constants.PARAM_COUNTRY) q: String,
+        @Query(Constants.PARAM_CATEGORY) category: String,
+        @Query(Constants.PARAM_KEY) apiKey: String
     ): NewsModel
 }
 

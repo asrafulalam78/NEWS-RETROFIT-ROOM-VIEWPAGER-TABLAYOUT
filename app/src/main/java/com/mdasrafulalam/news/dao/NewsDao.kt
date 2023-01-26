@@ -6,7 +6,7 @@ import com.mdasrafulalam.news.model.News
 
 @Dao
 interface NewsDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addNews(news: News)
 
     @Update

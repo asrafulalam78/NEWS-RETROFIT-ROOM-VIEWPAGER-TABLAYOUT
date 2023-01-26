@@ -1,4 +1,4 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -6,69 +6,79 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.*
-import android.widget.SearchView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.viewmodel.NewsViewmodel
+import com.mdasrafulalam.news.R
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentHealthBinding
+import com.mdasrafulalam.news.databinding.FragmentEntertainmentBinding
 import com.mdasrafulalam.news.model.News
 import com.mdasrafulalam.news.utils.Constants
 import org.aviran.cookiebar2.CookieBar
 
 
-class HealthFragment : Fragment() {
-    private lateinit var binding: FragmentHealthBinding
+class EntertainmentFragment : Fragment() {
+    private lateinit var binding: FragmentEntertainmentBinding
     private val viewModel: NewsViewmodel by activityViewModels()
     private lateinit var adapter: NewsRecyclerViewAdapter
+    private lateinit var list: List<News>
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        binding = FragmentHealthBinding.inflate(layoutInflater, container, false)
+        binding = FragmentEntertainmentBinding.inflate(layoutInflater, container, false)
+        list = listOf()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
-        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner) {
             if (it) {
-                binding.healthNewsRV.layoutManager = LinearLayoutManager(requireContext())
+                binding.entertainmentNewsRV.layoutManager = LinearLayoutManager(requireContext())
             } else {
-                binding.healthNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.entertainmentNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
             }
-        })
-        binding.healthNewsRV.adapter = adapter
-        viewModel.getHealthNews(Constants.CATEGORY_HEALTH, Constants.COUNTRY.value.toString())
-            .observe(viewLifecycleOwner) {
-                adapter.submitList(it)
-            }
-        binding.healthSwipRefreshLayout.setOnRefreshListener {
-            binding.healthSwipRefreshLayout.isRefreshing = false
+        }
+        binding.entertainmentNewsRV.adapter = adapter
+        viewModel.getEntertainmentNews(
+            Constants.CATEGORY_ENTERTAINMENT,
+            Constants.COUNTRY.value.toString()
+        ).observe(viewLifecycleOwner) {
+            adapter.submitList(it)
+            list = it
+        }
+        binding.entertainmentFragmentSwipRefreshLayout.setOnRefreshListener {
+            binding.entertainmentFragmentSwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
                 CookieBar.build(requireActivity())
                     .setTitle(getString(R.string.network_conncetion))
                     .setBackgroundColor(R.color.swipe_color_4)
                     .setTitleColor(R.color.white)
+                    .setSwipeToDismiss(true)
                     .setMessage("No Active Internet!")
                     .setDuration(5000)
-                    .setSwipeToDismiss(true)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
             } else {
-                viewModel.refreshHealthNews()
-                viewModel.getHealthNews(
-                    Constants.CATEGORY_HEALTH,
+                viewModel.refreshEntertainmentNews()
+                viewModel.getEntertainmentNews(
+                    Constants.CATEGORY_ENTERTAINMENT,
                     Constants.COUNTRY.value.toString()
-                ).observe(viewLifecycleOwner) {
-                    adapter.submitList(it)
-                }
+                )
+                    .observe(viewLifecycleOwner) {
+                        adapter.submitList(it)
+                    }
                 CookieBar.build(requireActivity())
                     .setMessage("News Updated!")
                     .setDuration(5000)
@@ -81,37 +91,27 @@ class HealthFragment : Fragment() {
 
         }
     }
-
-    fun updateBookmark(news: News) {
+    private fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.toolbar_menu, menu)
-        val search = menu?.findItem(R.id.action_search)
-        val searchView = search?.actionView as SearchView
+        val search = menu.findItem(R.id.action_search)
+        val searchView = search?.actionView as androidx.appcompat.widget.SearchView
         searchView.queryHint = "Search"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                searchAction(query.toString())
+                searchAction(query!!)
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
-                searchAction(newText.toString())
+                searchAction(newText!!)
                 return true
             }
         })
-
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
-                .show()
-            R.id.action_voice -> displaySpeechRecognizerForDesc()
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun displaySpeechRecognizerForDesc() {
@@ -123,11 +123,12 @@ class HealthFragment : Fragment() {
             )
         }
         // This starts the activity and populates the intent with the speech text.
-        startActivityForResult(intent, 4)
+        startActivityForResult(intent, 3)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 4 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 3 && resultCode == Activity.RESULT_OK) {
             val spokenText =
                 data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).let { results ->
                     results?.get(0) ?: return
@@ -140,15 +141,11 @@ class HealthFragment : Fragment() {
     }
 
     fun searchAction(query: String) {
-        var newsList: List<News>
-        viewModel.getHealthNews(Constants.CATEGORY_HEALTH, Constants.COUNTRY.value.toString())
-            .observe(viewLifecycleOwner, Observer {
-                newsList = it
-                ;
-                val collectionSearch: List<News> = newsList.filter {
-                    it.title!!.uppercase().contains(query.toString().uppercase())
-                }.toList()
-                adapter.submitList(collectionSearch)
-            })
+        val collectionSearch: List<News> = list.filter {
+            it.title!!.uppercase().contains(query.uppercase())
+        }.toList()
+        adapter.submitList(collectionSearch)
     }
+
+
 }

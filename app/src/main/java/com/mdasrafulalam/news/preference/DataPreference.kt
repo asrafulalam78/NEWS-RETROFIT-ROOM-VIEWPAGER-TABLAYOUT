@@ -17,6 +17,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 class DataPreference(context: Context) {
     private val selectedCountry = stringPreferencesKey("selectedCountry")
     private val selectedPosition = longPreferencesKey("selectedPosition")
+    private val selectedLayout = stringPreferencesKey("selectedLayout")
     private val darkMode = booleanPreferencesKey("darkMode")
 
     val selectedCountryFlow: Flow<String> = context.dataStore.data.catch {
@@ -27,6 +28,15 @@ class DataPreference(context: Context) {
         }
     }.map {
         it[selectedCountry] ?: "no country found"
+    }
+    val selectedLayoutFlow: Flow<String> = context.dataStore.data.catch {
+        if (it is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw it
+        }
+    }.map {
+        it[selectedLayout] ?: "Linear"
     }
 
     val selectedPositionFlow: Flow<Long> = context.dataStore.data.catch {
@@ -53,6 +63,12 @@ class DataPreference(context: Context) {
         context.dataStore.edit {
             it[selectedCountry] = country
             it[selectedPosition] = position
+        }
+    }
+
+    suspend fun setLayout(layout: String, context: Context) {
+        context.dataStore.edit {
+            it[selectedLayout] = layout
         }
     }
 

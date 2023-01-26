@@ -40,53 +40,51 @@ fun setBookMarkedIcon(imageView: ImageView, bookmarked: Boolean) {
 @RequiresApi(Build.VERSION_CODES.O)
 @BindingAdapter("app:dateTime")
 fun setDateTime(textView: TextView, datetime: String) {
-    if (datetime != null) {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        val dt = LocalDateTime.parse(datetime, formatter)
-        val calendar = Calendar.getInstance()
-        calendar.set(dt.year, dt.monthValue, dt.dayOfMonth, dt.hour, dt.minute)
-        val today = LocalDateTime.now()
-        val todayMonth = today.monthValue
-        val todayDay = today.dayOfMonth
-        val todayYear = today.year
-        val fromDay = dt.dayOfMonth
-        var fromMonth = dt.monthValue
-        var fromYear = dt.year
-        var hourDelay = today.hour - dt.hour
-        var dayDelay: Int
-        var monthDelay = todayMonth - fromMonth
-        var yearDelay = todayYear - fromYear
-        val start = Time(today.hour, today.minute, today.second)
-        val stop = Time(dt.hour, dt.minute, dt.second)
-        val diff: Time
-        if (todayDay < fromDay) {
-            dayDelay = (todayDay + 30) - fromDay
-            fromMonth += 1
-            if (todayMonth < fromMonth) {
-                monthDelay = (todayMonth + 12) - fromMonth
-                fromYear += 1
-            } else {
-                monthDelay = todayMonth - fromMonth
-                yearDelay = todayYear - fromYear
-            }
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    val dt = LocalDateTime.parse(datetime, formatter)
+    val calendar = Calendar.getInstance()
+    calendar.set(dt.year, dt.monthValue, dt.dayOfMonth, dt.hour, dt.minute)
+    val today = LocalDateTime.now()
+    val todayMonth = today.monthValue
+    val todayDay = today.dayOfMonth
+    val todayYear = today.year
+    val fromDay = dt.dayOfMonth
+    var fromMonth = dt.monthValue
+    var fromYear = dt.year
+    val hourDelay = today.hour - dt.hour
+    val dayDelay: Int
+    var monthDelay = todayMonth - fromMonth
+    var yearDelay = todayYear - fromYear
+    val start = Time(today.hour, today.minute, today.second)
+    val stop = Time(dt.hour, dt.minute, dt.second)
+    val diff: Time
+    if (todayDay < fromDay) {
+        dayDelay = (todayDay + 30) - fromDay
+        fromMonth += 1
+        if (todayMonth < fromMonth) {
+            monthDelay = (todayMonth + 12) - fromMonth
+            fromYear += 1
         } else {
-            dayDelay = todayDay - fromDay
             monthDelay = todayMonth - fromMonth
             yearDelay = todayYear - fromYear
         }
-        if (dayDelay > 0) {
-            textView.text =
-                String.format("Published at: " + dt.dayOfMonth + "/" + dt.monthValue + "/" + dt.year)
-        } else {
-            diff = difference(start, stop)
-            var hours = diff.hours
-            if (hours < 0.0) {
-                hours = hours * -1
-            }
-            textView.text = String.format("Published $hours hours ago")
-        }
-        Log.d("checktime", "delay: $hourDelay, $hourDelay")
+    } else {
+        dayDelay = todayDay - fromDay
+        monthDelay = todayMonth - fromMonth
+        yearDelay = todayYear - fromYear
     }
+    if (dayDelay > 0) {
+        textView.text =
+            String.format("Published at: " + dt.dayOfMonth + "/" + dt.monthValue + "/" + dt.year)
+    } else {
+        diff = difference(start, stop)
+        var hours = diff.hours
+        if (hours < 0.0) {
+            hours = hours * -1
+        }
+        textView.text = String.format("Published $hours hours ago")
+    }
+    Log.d("checktime", "delay: $hourDelay, $hourDelay")
 }
 
 fun difference(start: Time, stop: Time): Time {

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import androidx.lifecycle.MutableLiveData
-import com.mdasrafulalam.news.BuildConfig
 
 class Constants {
     companion object {
@@ -121,7 +120,11 @@ class Constants {
             "ve",
             "za"
         )
-        var API_KEY = BuildConfig.apiKey
+        const val API_KEY = "6e1f4dc0c07f41318d981fee6210bef2"
+        const val END_POINT = "top-headlines"
+        const val PARAM_COUNTRY = "country"
+        const val PARAM_CATEGORY = "category"
+        const val PARAM_KEY = "apiKey"
         var selectedTab = ""
         val categoryArray = arrayOf(
             "Top News",
@@ -145,15 +148,15 @@ class Constants {
         const val NOTIFICATION_ID = 1
 
         var COUNTRY = MutableLiveData<String>()
-        var DARKMODE = MutableLiveData<Boolean>()
         var ISLINEARLYOUT = MutableLiveData<Boolean>()
-        val CATEGORY_BUSINESS = "business"
-        val CATEGORY_TOP_NEWS = "top_news"
-        val CATEGORY_ENTERTAINMENT = "entertainment"
-        val CATEGORY_HEALTH = "health"
-        val CATEGORY_SCIENCE = "science"
-        val CATEGORY_SPORTS = "sports"
-        val CATEGORY_TECHNOLOGY = "technology"
+        var DARKMODE = MutableLiveData<Boolean>()
+        const val CATEGORY_BUSINESS = "business"
+        const val CATEGORY_TOP_NEWS = "top_news"
+        const val CATEGORY_ENTERTAINMENT = "entertainment"
+        const val CATEGORY_HEALTH = "health"
+        const val CATEGORY_SCIENCE = "science"
+        const val CATEGORY_SPORTS = "sports"
+        const val CATEGORY_TECHNOLOGY = "technology"
 
         @SuppressLint("MissingPermission")
         fun verifyAvailableNetwork(context: Context): Boolean {

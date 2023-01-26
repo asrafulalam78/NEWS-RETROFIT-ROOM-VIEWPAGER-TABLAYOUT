@@ -7,9 +7,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mdasrafulalam.news.BookMarkFragmentDirections
 import com.mdasrafulalam.news.databinding.NewsListItemBinding
 import com.mdasrafulalam.news.model.News
+import com.mdasrafulalam.news.ui.BookMarkFragmentDirections
 
 class BookMarkAdapter(val addBookmarkCallback: (News) -> Unit) :
     ListAdapter<News, BookMarkAdapter.NewsViewHolder>(NewsDiffCallback()) {

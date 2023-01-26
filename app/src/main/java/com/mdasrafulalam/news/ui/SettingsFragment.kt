@@ -1,35 +1,36 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.ui
 
 import android.R
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.coroutineScope
-import com.mdasrafulal.NewsViewmodel
 import com.mdasrafulalam.news.databinding.FragmentSettingsBinding
 import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
+import com.mdasrafulalam.news.viewmodel.NewsViewmodel
 import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment() {
     private lateinit var _binding: FragmentSettingsBinding
     private val viewModel: NewsViewmodel by activityViewModels()
     private var isLinear = true
+    private lateinit var layout:String
     private lateinit var preferences: DataPreference
     private val binding get() = _binding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -44,18 +45,41 @@ class SettingsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+        preferences = DataPreference(requireContext())
+        preferences.selectedLayoutFlow.asLiveData().observe(viewLifecycleOwner) {
+            if (it=="Linear"){
+                Constants.ISLINEARLYOUT.value = true
+            }else if(it=="Grid"){
+                Constants.ISLINEARLYOUT.value = false
+            }
+        }
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner) {
             isLinear = it
             chooseImage(isLinear)
-        })
-        preferences = DataPreference(requireContext())
-        Constants.DARKMODE.observe(viewLifecycleOwner, Observer {
+            if (isLinear) {
+                layout = "Linear"
+            } else {
+                layout = "Grid"
+            }
+        }
+
+        Constants.DARKMODE.observe(viewLifecycleOwner) {
             binding.themeSwitch.isChecked = it
-        })
+        }
         binding.preferedLayout.setOnClickListener {
             isLinear = !isLinear
             Constants.ISLINEARLYOUT.value = isLinear
             chooseImage(isLinear)
+            if (isLinear){
+                layout = "Linear"
+            }else{
+                layout = "Grid"
+            }
+            lifecycle.coroutineScope.launch {
+                preferences.setLayout(layout,
+                    requireContext()
+                )
+            }
         }
         val countryAdapter = ArrayAdapter(
             requireActivity(),
@@ -67,20 +91,12 @@ class SettingsFragment : Fragment() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 binding.settingsFragmentLL.setBackgroundColor(resources.getColor(R.color.darker_gray))
                 binding.themeSwitch.setBackgroundColor(resources.getColor(com.mdasrafulalam.news.R.color.nav_bar_start))
-                binding.themeSwitch.text =
-                    getString(com.mdasrafulalam.news.R.string.disable_dark_mode)
-//                lifecycle.coroutineScope.launch {
-//                    preferences.setDarkModeValue(true, requireContext())
-//                }
+                binding.themeSwitch.text = getString(com.mdasrafulalam.news.R.string.disable_dark_mode)
                 Constants.DARKMODE.value = true
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 binding.settingsFragmentLL.setBackgroundColor(resources.getColor(R.color.white))
-                binding.themeSwitch.text =
-                    getString(com.mdasrafulalam.news.R.string.enable_dark_mode)
-//                lifecycle.coroutineScope.launch {
-//                    preferences.setDarkModeValue(false, requireContext())
-//                }
+                binding.themeSwitch.text = getString(com.mdasrafulalam.news.R.string.enable_dark_mode)
                 Constants.DARKMODE.value = false
             }
         }
@@ -108,7 +124,11 @@ class SettingsFragment : Fragment() {
                         )
                     }
                     Log.d("country", "Selected Country: ${Constants.COUNTRY.value.toString()}")
-                    viewModel.refreshData()
+                    try {
+                        viewModel.refreshData()
+                    }catch (e:Exception){
+                        Toast.makeText(requireContext(), "$e", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {

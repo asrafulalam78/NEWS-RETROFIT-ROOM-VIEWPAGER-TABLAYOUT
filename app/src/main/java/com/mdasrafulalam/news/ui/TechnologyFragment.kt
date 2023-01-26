@@ -1,4 +1,4 @@
-package com.mdasrafulalam.news
+package com.mdasrafulalam.news.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -6,79 +6,82 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.*
-import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.mdasrafulal.NewsViewmodel
+import com.mdasrafulalam.news.R
 import com.mdasrafulalam.news.adapter.NewsRecyclerViewAdapter
-import com.mdasrafulalam.news.databinding.FragmentAllNewsBinding
+import com.mdasrafulalam.news.databinding.FragmentTechnologyBinding
 import com.mdasrafulalam.news.model.News
-import com.mdasrafulalam.news.preference.DataPreference
 import com.mdasrafulalam.news.utils.Constants
+import com.mdasrafulalam.news.viewmodel.NewsViewmodel
 import org.aviran.cookiebar2.CookieBar
 
-class AllNewsFragment : Fragment() {
-    private lateinit var preference: DataPreference
-    private lateinit var binding: FragmentAllNewsBinding
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var adapter: NewsRecyclerViewAdapter
+class TechnologyFragment : Fragment() {
+    private lateinit var binding: FragmentTechnologyBinding
     private val viewModel: NewsViewmodel by activityViewModels()
+    private lateinit var adapter: NewsRecyclerViewAdapter
+    private lateinit var list: List<News>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // Inflate the layout for this fragment
-        binding = FragmentAllNewsBinding.inflate(layoutInflater, container, false)
-        swipeRefreshLayout = binding.refreshLayout
+        binding = FragmentTechnologyBinding.inflate(layoutInflater, container, false)
+        list = listOf()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner, ::updateBookmark)
-        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner, Observer {
+        adapter = NewsRecyclerViewAdapter(viewLifecycleOwner,::updateBookmark)
+        Constants.ISLINEARLYOUT.observe(viewLifecycleOwner) {
             if (it) {
-                binding.newsRV.layoutManager = LinearLayoutManager(requireContext())
+                binding.technologyNewsRV.layoutManager = LinearLayoutManager(requireContext())
             } else {
-                binding.newsRV.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.technologyNewsRV.layoutManager = GridLayoutManager(requireContext(), 2)
             }
-        })
-
-        binding.newsRV.adapter = adapter
-        preference = DataPreference(requireContext())
-        preference.selectedCountryFlow.asLiveData().observe(requireActivity()) {
-            Constants.COUNTRY.value = it
         }
-        viewModel.getAllNews(Constants.COUNTRY.value.toString()).observe(viewLifecycleOwner) {
+        binding.technologyNewsRV.adapter = adapter
+        viewModel.getTechnologyNews(
+            Constants.CATEGORY_TECHNOLOGY,
+            Constants.COUNTRY.value.toString()
+        ).observe(viewLifecycleOwner) {
             adapter.submitList(it)
+            list = it
         }
-        swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.isRefreshing = false
+        binding.technologySwipRefreshLayout.setOnRefreshListener {
+            binding.technologySwipRefreshLayout.isRefreshing = false
             if (!Constants.verifyAvailableNetwork(requireContext())) {
-                CookieBar.build(requireActivity()).setTitle(getString(R.string.network_conncetion))
-                    .setBackgroundColor(R.color.swipe_color_4).setTitleColor(R.color.white)
-                    .setSwipeToDismiss(true).setMessage("No Active Internet!").setDuration(5000)
+                CookieBar.build(requireActivity())
+                    .setTitle("Network Connection")
+                    .setBackgroundColor(R.color.swipe_color_4)
+                    .setTitleColor(R.color.white)
+                    .setMessage("No Active Internet!")
+                    .setSwipeToDismiss(true)
+                    .setDuration(5000)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
             } else {
-                viewModel.refreshAllNews()
-                viewModel.getAllNews(Constants.COUNTRY.value.toString())
+                viewModel.refreshTechnologyNews()
+                viewModel.getTechnologyNews(
+                    Constants.CATEGORY_TECHNOLOGY,
+                    Constants.COUNTRY.value.toString()
+                )
                     .observe(viewLifecycleOwner) {
                         adapter.submitList(it)
                     }
-                CookieBar.build(requireActivity()).setMessage("News Updated!").setDuration(5000)
-                    .setBackgroundColor(R.color.color_tab_text).setIcon(R.drawable.success)
-                    .setMessageColor(R.color.white)
+                CookieBar.build(requireActivity())
+                    .setMessage("News Updated!")
+                    .setDuration(5000)
+                    .setBackgroundColor(R.color.color_tab_text)
+                    .setIcon(R.drawable.success)
                     .setAnimationIn(android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                     .setAnimationOut(android.R.anim.slide_out_right, android.R.anim.slide_out_right)
                     .show()
@@ -87,39 +90,36 @@ class AllNewsFragment : Fragment() {
         }
     }
 
-    fun updateBookmark(news: News) {
+    private fun updateBookmark(news: News) {
         viewModel.updateBookMark(news)
     }
-
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.toolbar_menu, menu)
-        val search = menu?.findItem(R.id.action_search)
-        val searchView = search?.actionView as SearchView
+        val search = menu.findItem(R.id.action_search)
+        val searchView = search?.actionView as androidx.appcompat.widget.SearchView
         searchView.queryHint = "Search"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 searchAction(query!!)
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 searchAction(newText!!)
                 return true
             }
         })
-
     }
-
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_search -> Toast.makeText(requireContext(), "Search", Toast.LENGTH_SHORT)
-                .show()
-            R.id.action_voice -> displaySpeechRecognizerForDesc()
+            R.id.action_voice -> displaySpeechRecognizer()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun displaySpeechRecognizerForDesc() {
+    private fun displaySpeechRecognizer() {
         //Starts an activity that will prompt the user for speech and send it through a speech recognizer.
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -128,11 +128,12 @@ class AllNewsFragment : Fragment() {
             )
         }
         // This starts the activity and populates the intent with the speech text.
-        startActivityForResult(intent, 0)
+        startActivityForResult(intent, 7)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 7 && resultCode == Activity.RESULT_OK) {
             val spokenText =
                 data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).let { results ->
                     results?.get(0) ?: return
@@ -145,16 +146,10 @@ class AllNewsFragment : Fragment() {
     }
 
     fun searchAction(query: String) {
-        var newsList: List<News>
-        viewModel.getAllNews(Constants.COUNTRY.value.toString())
-            .observe(viewLifecycleOwner, Observer {
-                newsList = it
-                val collectionSearch: List<News> = newsList.filter {
-                    it.title!!.uppercase().contains(query.toString().uppercase())
-                }.toList()
-                adapter.submitList(collectionSearch)
-            })
-
+        val collectionSearch: List<News> = list.filter {
+            it.title!!.uppercase().contains(query.uppercase())
+        }.toList()
+        adapter.submitList(collectionSearch)
     }
 
 }
